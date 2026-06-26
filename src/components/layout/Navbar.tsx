@@ -51,24 +51,20 @@ export function Navbar() {
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
         aria-label="Main navigation"
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
-          scrolled ? "glass shadow-sm" : "bg-transparent"
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-white",
+          scrolled && "shadow-sm"
         )}
       >
-        <div className="container flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center gap-3 group" aria-label="3 Ways Enclosure — home">
-            <div className="w-10 h-10 flex items-center justify-center">
+        <div className="container flex items-center justify-between h-[120px]">
+          <Link href="/" className="flex items-center gap-3 group" aria-label="3WBW Threeways Birdwatch — home">
+            <div className="w-16 h-16 flex items-center justify-center overflow-hidden">
               <img
-                src="/3wbw-logo.svg"
+                src="/3wbw-logo.png"
                 alt="3WBW Threeways Birdwatch"
-                width={40}
-                height={40}
-                className="w-10 h-10 object-contain invert"
+                width={64}
+                height={64}
+                className="w-16 h-16 object-contain"
               />
-            </div>
-            <div className="hidden sm:block">
-              <span className="font-bold text-lg leading-tight block">3 Ways</span>
-              <span className="text-xs text-muted leading-tight block">Enclosure</span>
             </div>
           </Link>
 
@@ -82,7 +78,7 @@ export function Navbar() {
                   "relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-300",
                   pathname === link.href
                     ? "text-forest"
-                    : "text-text-secondary hover:text-text"
+                    : "text-black hover:text-forest"
                 )}
               >
                 {pathname === link.href && (

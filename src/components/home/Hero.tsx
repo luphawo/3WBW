@@ -39,8 +39,7 @@ export function Hero() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage:
-              "url(https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&h=1080&fit=crop)",
+            backgroundImage: "url(/hero/DSC05480.webp)",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent z-20" />
@@ -60,18 +59,6 @@ export function Hero() {
         className="relative z-30 container h-full flex flex-col justify-center"
       >
         <div className="max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex items-center gap-3 mb-8"
-          >
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold/40 text-gold text-xs font-semibold tracking-widest uppercase">
-              <MapPin className="w-3 h-3" aria-hidden="true" />
-              <span>City of Johannesburg</span>
-            </span>
-          </motion.div>
-
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -91,8 +78,9 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="text-lg sm:text-xl text-ivory/70 max-w-xl mb-10 leading-relaxed"
           >
-            A premium residential enclosure bounded by Plover Street, Jacana Street, 
-            and Kestrel Avenue — where community meets security, and neighbours become family.
+            The Threeways Birdwatch security enclosure (encompassing Plover Street, Jacana Street,
+            and Kestrel Avenue) operates under the formal authority of the City of Johannesburg,
+            under Chapter 7 of the rationalisation Framework.
           </motion.p>
 
           <motion.div
@@ -128,7 +116,7 @@ export function Hero() {
           >
             <div className="flex items-center gap-3 text-ivory/60">
               <Users className="w-5 h-5 text-gold" />
-              <span className="text-sm">128 Homes</span>
+              <span className="text-sm">72 Homes</span>
             </div>
             <div className="flex items-center gap-3 text-ivory/60">
               <Shield className="w-5 h-5 text-gold" />

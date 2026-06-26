@@ -30,7 +30,8 @@ export function SecurityUpdates({ alerts, incidents }: SecurityUpdatesProps) {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          <div className="lg:col-span-2 flex flex-col gap-6">
           {activeAlerts.map((alert, i) => (
             <motion.div
               key={alert.id}
@@ -38,7 +39,6 @@ export function SecurityUpdates({ alerts, incidents }: SecurityUpdatesProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="lg:col-span-2"
             >
               <GlassCard
                 className={`border-l-4 ${
@@ -78,6 +78,7 @@ export function SecurityUpdates({ alerts, incidents }: SecurityUpdatesProps) {
               </GlassCard>
             </motion.div>
           ))}
+          </div>
 
           <div className="flex flex-col gap-4">
             <GlassCard className="bg-forest/5 border border-forest/10">

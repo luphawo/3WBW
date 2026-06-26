@@ -35,19 +35,15 @@ export function Footer() {
       <div className="container relative py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-3 mb-6" aria-label="3 Ways Enclosure — home">
-              <div className="w-12 h-12 flex items-center justify-center">
+            <Link href="/" className="flex items-center gap-3 mb-6" aria-label="3WBW Threeways Birdwatch — home">
+              <div className="w-16 h-16 flex items-center justify-center overflow-hidden">
                 <img
-                  src="/3wbw-logo.svg"
+                  src="/3wbw-logo.png"
                   alt="3WBW Threeways Birdwatch"
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 object-contain invert"
+                  width={64}
+                  height={64}
+                  className="w-16 h-16 object-contain invert"
                 />
-              </div>
-              <div>
-                <span className="font-bold text-xl leading-tight block">3 Ways</span>
-                <span className="text-sm text-ivory/60 leading-tight block">Enclosure · Fourways</span>
               </div>
             </Link>
             <p className="text-ivory/70 text-sm leading-relaxed max-w-sm mb-6">
