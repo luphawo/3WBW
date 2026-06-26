@@ -39,7 +39,7 @@ export function Hero() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url(/hero/DSC05480.webp)",
+            backgroundImage: "url(/hero/gate-entrance.webp)",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent z-20" />

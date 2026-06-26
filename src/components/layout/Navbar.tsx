@@ -57,13 +57,13 @@ export function Navbar() {
       >
         <div className="container flex items-center justify-between h-[120px]">
           <Link href="/" className="flex items-center gap-3 group" aria-label="3WBW Threeways Birdwatch — home">
-            <div className="w-16 h-16 flex items-center justify-center overflow-hidden">
+            <div className="w-[115px] h-[115px] flex items-center justify-center overflow-hidden">
               <img
                 src="/3wbw-logo.png"
                 alt="3WBW Threeways Birdwatch"
-                width={64}
-                height={64}
-                className="w-16 h-16 object-contain"
+                width={115}
+                height={115}
+                className="w-[115px] h-[115px] object-contain"
               />
             </div>
           </Link>
@@ -75,7 +75,7 @@ export function Navbar() {
                 href={link.href}
                 aria-current={pathname === link.href ? "page" : undefined}
                 className={cn(
-                  "relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-300",
+                  "relative px-4 py-2 text-[15px] font-medium rounded-lg transition-colors duration-300",
                   pathname === link.href
                     ? "text-forest"
                     : "text-black hover:text-forest"

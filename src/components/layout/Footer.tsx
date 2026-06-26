@@ -47,8 +47,9 @@ export function Footer() {
               </div>
             </Link>
             <p className="text-ivory/70 text-sm leading-relaxed max-w-sm mb-6">
-              A premium residential enclosure in the heart of Fourways, Sandton.
-              Connected living, community-first.
+              The Threeways Birdwatch security enclosure (encompassing Plover Street, Jacana Street,
+              and Kestrel Avenue) operates under the formal authority of the City of Johannesburg,
+              under Chapter 7 of the rationalisation Framework.
             </p>
             <address className="not-italic flex flex-col gap-3 text-sm text-ivory/70">
               <div className="flex items-start gap-3">

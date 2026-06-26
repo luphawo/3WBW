@@ -39,7 +39,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.variable} min-h-screen flex flex-col antialiased font-sans`}>
         <Navbar />
-        <main id="main-content" className="flex-1" tabIndex={-1}>
+        <main id="main-content" className="flex-1 pt-[120px]" tabIndex={-1}>
           {children}
         </main>
         <Footer />
