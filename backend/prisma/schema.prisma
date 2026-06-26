@@ -1,0 +1,291 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TRUSTEE
+  RESIDENT
+}
+
+enum IncidentStatus {
+  OPEN
+  INVESTIGATING
+  RESOLVED
+}
+
+enum AlertPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlertType {
+  EMERGENCY
+  WARNING
+  INFO
+  UPDATE
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(RESIDENT)
+  verified  Boolean  @default(false)
+  avatar    String?
+  phone     String?
+  unit      String?
+  street    String?
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articles   Article[]
+  comments   Comment[]
+  incidents  Incident[]
+  reviews    Review[]
+  listings   MarketplaceItem[]
+  polls      Poll[]
+  votes      Vote[]
+}
+
+model Household {
+  id        String   @id @default(cuid())
+  unit      String
+  street    String
+  residents Int      @default(1)
+  createdAt DateTime @default(now())
+
+  users User[]
+}
+
+model Property {
+  id           String   @id @default(cuid())
+  street       String
+  unit         String?
+  type         String   @default("residential")
+  ownerName    String?
+  ownerEmail   String?
+  ownerPhone   String?
+  occupants    Int      @default(1)
+  parkingBays  Int      @default(1)
+  petFriendly  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  color String @default("#2D5A3F")
+
+  articles Article[]
+}
+
+model Article {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  excerpt     String?
+  content     String        @db.Text
+  coverImage  String?
+  featured    Boolean       @default(false)
+  publishedAt DateTime?
+  status      ArticleStatus @default(DRAFT)
+  readTime    Int           @default(3)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id])
+
+  tags     Tag[]
+  comments Comment[]
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  articles ArticleTag[]
+}
+
+model ArticleTag {
+  articleId String
+  tagId     String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User    @relation(fields: [authorId], references: [id])
+}
+
+model Incident {
+  id          String          @id @default(cuid())
+  type        String          @default("security")
+  title       String
+  description String          @db.Text
+  status      IncidentStatus  @default(OPEN)
+  location    String?
+  priority    AlertPriority   @default(MEDIUM)
+  reportedAt  DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  reporterId String
+  reporter   User   @relation(fields: [reporterId], references: [id])
+}
+
+model Alert {
+  id        String        @id @default(cuid())
+  type      AlertType     @default(INFO)
+  title     String
+  message   String        @db.Text
+  priority  AlertPriority @default(MEDIUM)
+  active    Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  expiresAt DateTime?
+
+  createdBy String
+}
+
+model Business {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  description String   @db.Text
+  phone       String
+  email       String?
+  website     String?
+  address     String
+  rating      Float    @default(0)
+  reviewCount Int      @default(0)
+  featured    Boolean  @default(false)
+  image       String?
+  hours       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reviews Review[]
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id])
+}
+
+model Poll {
+  id        String   @id @default(cuid())
+  question  String
+  active    Boolean  @default(true)
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+
+  options PollOption[]
+  votes   Vote[]
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+}
+
+model PollOption {
+  id     String @id @default(cuid())
+  label  String
+  count  Int    @default(0)
+
+  pollId String
+  poll   Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId   String
+  user     User       @relation(fields: [userId], references: [id])
+  pollId   String
+  poll     Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  optionId String
+  option   PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pollId])
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @db.Text
+  type      String   @default("notice")
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  expiresAt DateTime?
+
+  author String
+}
+
+model Media {
+  id          String   @id @default(cuid())
+  filename    String
+  url         String
+  mimeType    String
+  size        Int
+  width       Int?
+  height      Int?
+  alt         String?
+  caption     String?
+  category    String?
+  createdAt   DateTime @default(now())
+
+  uploadedById String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+}
+
+model MarketplaceItem {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  price       Float
+  category    String
+  status      String   @default("available")
+  images      String   @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sellerId String
+  seller   User   @relation(fields: [sellerId], references: [id])
+}
