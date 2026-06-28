@@ -1,24 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionReveal, GlassCard } from "@/components/ui";
-import { GalleryImage } from "@/types";
+import { getGalleryItems } from "@/lib/media-store";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
-interface GalleryProps {
-  images: GalleryImage[];
+interface GalleryDisplayItem {
+  id: string;
+  src: string;
+  category: string;
+  caption: string;
+  width: number;
+  height: number;
 }
 
-export function CommunityGallery({ images }: GalleryProps) {
-  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+export function CommunityGallery() {
+  const [galleryItems, setGalleryItems] = useState<GalleryDisplayItem[]>([]);
+  const [selectedImage, setSelectedImage] = useState<GalleryDisplayItem | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [filter, setFilter] = useState<string>("all");
 
-  const categories = ["all", "community", "event", "lifestyle", "security"];
-  const filtered = filter === "all" ? images : images.filter((img) => img.category === filter);
+  useEffect(() => {
+    const allItems = getGalleryItems().map((item) => ({
+      id: item.id,
+      src: item.src,
+      category: item.category,
+      caption: item.caption,
+      width: item.width || 800,
+      height: item.height || 600,
+    }));
 
-  const openImage = (image: GalleryImage, index: number) => {
+    const required = ["community", "event", "lifestyle", "security"] as const;
+    const picked: GalleryDisplayItem[] = [];
+    const remaining: GalleryDisplayItem[] = [];
+    const used = new Set<string>();
+
+    for (const cat of required) {
+      const found = allItems.find((item) => item.category === cat);
+      if (found) {
+        picked.push(found);
+        used.add(found.id);
+      }
+    }
+
+    for (const item of allItems) {
+      if (!used.has(item.id)) {
+        remaining.push(item);
+      }
+    }
+
+    const rest = remaining.slice(0, 6 - picked.length);
+    setGalleryItems([...picked, ...rest]);
+  }, []);
+
+  const categories = ["all", "community", "event", "lifestyle", "security"];
+  const filtered = filter === "all" ? galleryItems : galleryItems.filter((img) => img.category === filter);
+
+  const openImage = (image: GalleryDisplayItem, index: number) => {
     setSelectedImage(image);
     setSelectedIndex(index);
   };

@@ -9,7 +9,6 @@ const footerLinks = {
     { href: "/news", label: "News" },
     { href: "/safety", label: "Safety & Security" },
     { href: "/directory", label: "Local Directory" },
-    { href: "/marketplace", label: "Marketplace" },
     { href: "/gallery", label: "Gallery" },
   ],
   Resources: [
@@ -17,11 +16,10 @@ const footerLinks = {
     { href: "/contact", label: "Contact" },
     { href: "/safety#emergency", label: "Emergency Contacts" },
     { href: "/safety#incidents", label: "Report Incident" },
+    { href: "/privacy", label: "Privacy Policy" },
   ],
   Administration: [
     { href: "/admin", label: "Admin Portal" },
-    { href: "/about#governance", label: "Governance" },
-    { href: "/about#documents", label: "Documents" },
   ],
 };
 
@@ -30,7 +28,7 @@ export function Footer() {
   if (pathname.startsWith("/admin")) return null;
 
   return (
-    <footer className="relative bg-graphite text-ivory overflow-hidden">
+    <footer className="relative bg-graphite text-ivory overflow-hidden" style={{ "--color-gold": "#C4952A", "--color-gold-light": "#D4A435" } as React.CSSProperties}>
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-forest/5" aria-hidden="true" />
       <div className="container relative py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
@@ -62,11 +60,17 @@ export function Footer() {
                   +27 11 465 7890
                 </a>
               </div>
-              <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-gold shrink-0" aria-hidden="true" />
-                <a href="mailto:info@3waysenclosure.co.za" className="hover:text-gold transition-colors duration-300">
-                  info@3waysenclosure.co.za
-                </a>
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center gap-3">
+                  <Mail className="w-4 h-4 text-gold shrink-0" aria-hidden="true" />
+                  <div className="flex flex-col gap-1">
+                    <a href="mailto:billing@threewaysbirdwatch.org.za" className="hover:text-gold transition-colors duration-300 text-sm">billing@threewaysbirdwatch.org.za</a>
+                    <a href="mailto:chairperson@threewaysbirdwatch.org.za" className="hover:text-gold transition-colors duration-300 text-sm">chairperson@threewaysbirdwatch.org.za</a>
+                    <a href="mailto:compliance@threewaysbirdwatch.org.za" className="hover:text-gold transition-colors duration-300 text-sm">compliance@threewaysbirdwatch.org.za</a>
+                    <a href="mailto:secretary@threewaysbirdwatch.org.za" className="hover:text-gold transition-colors duration-300 text-sm">secretary@threewaysbirdwatch.org.za</a>
+                    <a href="mailto:support@threewaysbirdwatch.org.za" className="hover:text-gold transition-colors duration-300 text-sm">support@threewaysbirdwatch.org.za</a>
+                  </div>
+                </div>
               </div>
             </address>
           </div>
@@ -92,7 +96,16 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <p className="text-sm text-ivory/40">
-            © {new Date().getFullYear()} 3 Ways Enclosure. All rights reserved.
+            © {new Date().getFullYear()} Threeways Birdwatch - Created by{" "}
+            <a
+              href="https://we-consult.co.za"
+              target="_blank"
+              rel="noopener noreferrer"
+               className="text-[#C4952A] hover:text-[#2C5F2E] transition-colors"
+            >
+              We-Consult
+            </a>
+            . All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="text-xs text-ivory/40 hover:text-ivory/70 transition-colors duration-300">

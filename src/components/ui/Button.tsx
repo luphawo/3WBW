@@ -22,14 +22,14 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           ref={ref}
           className={cn(
             "relative inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-xl w-full",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             {
               "bg-forest text-ivory hover:bg-forest-light shadow-lg shadow-forest/20": variant === "primary",
               "bg-charcoal text-ivory hover:bg-graphite shadow-lg shadow-black/10": variant === "secondary",
               "bg-transparent text-forest hover:bg-forest/10": variant === "ghost",
-              "border-2 border-gold text-gold hover:bg-gold/10": variant === "outline",
-              "bg-gradient-to-r from-gold to-gold-light text-graphite hover:brightness-110 shadow-lg shadow-gold/20": variant === "gold",
+              "border-2 border-[#C4952A] text-[#C4952A] hover:bg-[#C4952A]/10": variant === "outline",
+              "bg-gradient-to-r from-[#C4952A] to-[#D4A435] text-graphite hover:brightness-110 shadow-lg shadow-[#C4952A]/20": variant === "gold",
             },
             {
               "px-4 py-2 text-sm": size === "sm",

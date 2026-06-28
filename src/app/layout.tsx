@@ -13,13 +13,13 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: "3 Ways Enclosure — Connected Living in Fourways, Sandton",
-    template: "%s — 3 Ways Enclosure",
+    default: "Threeways Birdwatch Community Enclosure",
+    template: "%s — Threeways Birdwatch Community Enclosure",
   },
   description:
     "A premium residential enclosure in Fourways, Sandton. Community news, security updates, local directory, and neighbourhood engagement for the enclosure bounded by Plover Street, Jacana Street, and Kestrel Avenue.",
   keywords: [
-    "3 Ways Enclosure",
+    "Threeways Birdwatch",
     "Fourways",
     "Sandton",
     "Johannesburg",

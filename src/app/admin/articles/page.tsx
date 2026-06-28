@@ -1,19 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/ui";
-import { articles } from "@/lib/data";
-import { Plus, Search, Edit, Eye, Trash2, MoreHorizontal, Calendar } from "lucide-react";
+import { articles as staticArticles } from "@/lib/data";
+import { getArticles, deleteArticle as storeDelete } from "@/lib/article-store";
+import { Plus, Search, Edit, Eye, Trash2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
 export default function AdminArticles() {
   const [search, setSearch] = useState("");
+  const [articleList, setArticleList] = useState(staticArticles);
 
-  const filtered = articles.filter((a) =>
+  useEffect(() => {
+    setArticleList(getArticles());
+    function syncFromStorage(e: StorageEvent) {
+      if (e.key === "3wbw_articles") setArticleList(getArticles());
+    }
+    function sync() { setArticleList(getArticles()); }
+    window.addEventListener("storage", syncFromStorage);
+    window.addEventListener("focus", sync);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") sync();
+    });
+    return () => {
+      window.removeEventListener("storage", syncFromStorage);
+      window.removeEventListener("focus", sync);
+    };
+  }, []);
+
+  const filtered = articleList.filter((a) =>
     a.title.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleDelete = (id: string, title: string) => {
+    if (window.confirm(`Delete "${title}"? This cannot be undone.`)) {
+      storeDelete(id);
+      setArticleList(getArticles());
+    }
+  };
 
   return (
     <div className="min-h-screen bg-surface-alt p-6 lg:p-10">
@@ -107,13 +133,25 @@ export default function AdminArticles() {
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <button className="p-2 rounded-lg hover:bg-surface-alt transition-colors">
+                        <Link
+                          href={`/admin/articles/edit/${article.id}`}
+                          className="p-2 rounded-lg hover:bg-surface-alt transition-colors inline-flex"
+                          title="View article"
+                        >
                           <Eye className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 rounded-lg hover:bg-surface-alt transition-colors">
+                        </Link>
+                        <Link
+                          href={`/admin/articles/edit/${article.id}`}
+                          className="p-2 rounded-lg hover:bg-surface-alt transition-colors inline-flex"
+                          title="Edit article"
+                        >
                           <Edit className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 transition-colors">
+                        </Link>
+                        <button
+                          className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 transition-colors"
+                          onClick={() => handleDelete(article.id, article.title)}
+                          title="Delete article"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

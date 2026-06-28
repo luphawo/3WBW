@@ -29,7 +29,10 @@ export function LocalRecommendations({ businesses }: LocalRecommendationsProps) 
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div
+          className="grid gap-6"
+          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}
+        >
           {featured.map((biz, i) => (
             <motion.div
               key={biz.id}

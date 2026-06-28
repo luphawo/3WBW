@@ -35,14 +35,13 @@ export function Hero() {
   return (
     <section ref={ref} className="relative h-screen overflow-hidden">
       <motion.div style={{ opacity, scale }} className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-graphite/90 via-graphite/70 to-forest/50 z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: "url(/hero/gate-entrance.webp)",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent z-20" />
+        <div className="absolute inset-0 bg-black/50" />
       </motion.div>
 
       <motion.div
@@ -97,10 +96,10 @@ export function Hero() {
             </Link>
             <Link href="/contact">
               <Button variant="outline" size="lg" className="text-ivory border-ivory/30 hover:bg-ivory/10">
-                Join Community
+                Contact Us
               </Button>
             </Link>
-            <Link href="/safety">
+            <Link href="/safety?report=true">
               <Button variant="ghost" size="lg" className="text-ivory/70 hover:text-ivory">
                 <Shield className="mr-2 w-5 h-5" />
                 Report an Issue

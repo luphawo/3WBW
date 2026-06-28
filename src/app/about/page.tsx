@@ -2,13 +2,61 @@
 
 import { motion } from "framer-motion";
 import { SectionReveal } from "@/components/ui";
-import { Shield, Users, Trees, Home, MapPin, ScrollText } from "lucide-react";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Shield, Users, Trees, Home, ScrollText, Gauge, Key, PawPrint, Volume2, Trash2, TreePine, Fence, Banknote } from "lucide-react";
 
 const stats = [
-  { label: "Homes", value: "128", icon: Home },
-  { label: "Years Established", value: "15+", icon: ScrollText },
-  { label: "Residents", value: "450+", icon: Users },
+  { label: "Homes", value: "72", icon: Home },
+  { label: "Years Established", value: "27", icon: ScrollText },
   { label: "Security", value: "24/7", icon: Shield },
+];
+
+const rules = [
+  {
+    title: "Speed Limit — 40 km/h",
+    description: "A strict 40 km/h speed limit applies on all streets within the enclosure. Speed bumps are installed on Plover, Jacana, and Kestrel Streets to enforce compliance.",
+    icon: Gauge,
+  },
+  {
+    title: "Access Control",
+    description: "All vehicles must enter and exit via the designated boom gates. Remote controls are issued to residents — lost remotes must be reported immediately for security reprogramming.",
+    icon: Key,
+  },
+  {
+    title: "Pet Control",
+    description: "Dogs must be leashed when outside your property. Owners are responsible for cleaning up after their pets. No aggressive breeds are permitted in common areas without a muzzle.",
+    icon: PawPrint,
+  },
+  {
+    title: "Noise & Nuisance",
+    description: "Quiet hours are observed between 22:00 and 07:00. Power tools and loud music should be confined to daytime hours. Persistent noise complaints are referred to the Compliance Officer.",
+    icon: Volume2,
+  },
+  {
+    title: "Refuse & Recycling Removal",
+    description: "Refuse and Recycling are collected on Monday and Tuesday mornings, respectively. Empty refuse bins must be collected as soon as possible.",
+    icon: Trash2,
+  },
+  {
+    title: "Verge Maintenance",
+    description: "Residents are responsible for maintaining the verge (pavement) in front of their properties, including grass cutting, weeding, and keeping it free of litter.",
+    icon: Trees,
+  },
+  {
+    title: "Street Trees",
+    description: "Street trees are managed by City Parks. Residents may request pruning or report damaged trees via the Jhb Roads Agency. Do not remove or trim trees without approval.",
+    icon: TreePine,
+  },
+  {
+    title: "Pedestrian Gate",
+    description: "The pedestrian gates are open 06:00–18:00 daily.",
+    icon: Fence,
+  },
+  {
+    title: "Levies",
+    description: "The monthly levy is R1,150 per household, payable by debit order or EFT.",
+    icon: Banknote,
+  },
 ];
 
 const values = [
@@ -32,30 +80,15 @@ const values = [
 export default function About() {
   return (
     <>
-      <section className="relative pt-32 pb-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-graphite to-surface" />
-        <div className="absolute top-20 right-20 w-72 h-72 bg-gold/5 rounded-full blur-3xl" />
-        <div className="container relative">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <span className="text-gold text-sm font-semibold tracking-widest uppercase">About</span>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mt-4 mb-6 text-ivory">
-              Our Enclosure
-            </h1>
-            <p className="text-lg sm:text-xl text-ivory/60 max-w-2xl leading-relaxed">
-              A premier residential community nestled in the heart of Fourways, Sandton — 
-              where security, tranquillity, and community spirit define everyday life.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHeader
+        label="About"
+        title="Our Enclosure"
+        description="Tranquil Living in the Heart of Fourways. Threeways Birdwatch security enclosure (encompassing Plover Street, Jacana Street, and Kestrel Avenue) is a residential community nestled in the heart of Fourways, Sandton — where security, tranquillity, and community spirit define everyday life."
+      />
 
       <section className="py-20 bg-surface-alt">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="px-6 sm:px-10 max-w-4xl mx-auto">
+          <div className="grid grid-cols-3 gap-12 sm:gap-20">
             {stats.map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -80,22 +113,20 @@ export default function About() {
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <span className="text-gold text-sm font-semibold tracking-widest uppercase">History</span>
+              <span className="text-gold text-sm font-semibold tracking-widest uppercase">Community</span>
               <h2 className="text-4xl font-bold mt-2 mb-6">Ref: 1 — A Landmark Enclosure</h2>
               <div className="space-y-4 text-text-secondary leading-relaxed">
                 <p>
-                  Bounded by Plover Street, Jacana Street, and Kestrel Avenue, the 3 Ways Enclosure 
-                  stands as Ref: 1 — the first registered enclosure of its kind under the City of 
-                  Johannesburg&apos;s enclosure policy.
+                  Bounded by Plover Street, Jacana Street, and Kestrel Avenue, the enclosure has been in operation since 1998 and was officially issued with Ref No. 1 — the first registered enclosure of its kind under the City of Johannesburg&apos;s enclosure policy.
                 </p>
                 <p>
-                  Established to enhance security, improve traffic management, and foster a stronger 
-                  sense of community, our enclosure has grown to become one of Fourways&apos; most 
-                  desirable residential addresses.
+                  Our enclosure has been registered as an NPC with duly appointed directors, who ensure that governance is upheld e.g., annual general meetings.
                 </p>
                 <p>
-                  Today, 128 homes across three interconnected streets form a vibrant, secure, and 
-                  close-knit community that embodies the best of suburban Sandton living.
+                  Today, 72 homes across three interconnected streets form a vibrant, secure, and close-knit community that embodies the best of suburban Sandton living.
+                </p>
+                <p>
+                  We have an automated boom system, and are privileged to have a permanent vehicle, with armed guard, patrolling our three streets, 24/7, together with 14 cameras, which are linked to an off-site surveillance team. This level of security comes at a huge cost, hence the monthly levies that residents contribute.
                 </p>
               </div>
             </div>
@@ -104,14 +135,9 @@ export default function About() {
                 <div
                   className="w-full h-full bg-cover bg-center"
                   style={{
-                    backgroundImage: "url(https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop)",
+                    backgroundImage: "url(/hero/gate-entrance.webp)",
                   }}
                 />
-              </div>
-              <div className="absolute -bottom-6 -left-6 glass-card rounded-2xl p-6 max-w-[200px]">
-                <MapPin className="w-5 h-5 text-gold mb-2" />
-                <p className="text-sm font-semibold">Fourways, Sandton</p>
-                <p className="text-xs text-muted">City of Johannesburg</p>
               </div>
             </div>
           </div>
@@ -139,6 +165,40 @@ export default function About() {
                 </div>
                 <h3 className="text-xl font-bold mb-3">{value.title}</h3>
                 <p className="text-text-secondary leading-relaxed">{value.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </SectionReveal>
+
+      <SectionReveal className="py-24">
+        <div className="container">
+          <div className="text-center mb-16">
+            <span className="text-gold text-sm font-semibold tracking-widest uppercase">Our Rules</span>
+            <h2 className="text-4xl sm:text-5xl font-bold mt-2">Enclosure Guidelines</h2>
+            <p className="text-text-secondary text-lg mt-4 max-w-2xl mx-auto">
+              Rules, by-laws, and guidelines that keep our enclosure safe, clean, and harmonious for all residents.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rules.map((rule, i) => (
+              <motion.div
+                key={rule.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="glass-card rounded-2xl p-6"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center shrink-0 mt-1">
+                    <rule.icon className="w-6 h-6 text-gold" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base mb-1">{rule.title}</h3>
+                    <p className="text-sm text-text-secondary leading-relaxed">{rule.description}</p>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>

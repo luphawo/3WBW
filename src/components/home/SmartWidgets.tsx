@@ -65,8 +65,10 @@ export function SmartWidgets() {
             </div>
             <p className="text-lg font-bold">10111</p>
             <p className="text-sm text-text-secondary">SAPS Emergency</p>
-            <div className="mt-2 text-xs text-muted">
-              <span>Security: 082 555 0199</span>
+            <div className="mt-2 text-xs text-muted space-y-0.5">
+              <span>CoJ Emergency: 011 375 591</span>
+              <br />
+              <span>Security: 086 111 4021</span>
             </div>
           </GlassCard>
         </div>

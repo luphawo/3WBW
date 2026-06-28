@@ -1,23 +1,27 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { SectionReveal, GlassCard } from "@/components/ui";
-import { Notice } from "@/types";
-import { Pin, Bell, AlertTriangle, ArrowRight } from "lucide-react";
+import { GlassCard } from "@/components/ui";
+import { getNotices } from "@/lib/notice-store";
+import { notices as staticNotices } from "@/lib/data";
+import { Pin, Bell, AlertTriangle } from "lucide-react";
 
-interface CommunityNoticesProps {
-  notices: Notice[];
-}
+const iconMap: Record<string, typeof Bell> = {
+  announcement: Bell,
+  warning: AlertTriangle,
+  notice: Bell,
+};
 
-export function CommunityNotices({ notices }: CommunityNoticesProps) {
-  const iconMap = {
-    announcement: Bell,
-    warning: AlertTriangle,
-    notice: Bell,
-  };
+export function CommunityNotices() {
+  const [noticeList, setNoticeList] = useState(staticNotices);
+
+  useEffect(() => {
+    setNoticeList(getNotices());
+  }, []);
 
   return (
-    <SectionReveal className="py-24 bg-surface-alt">
+    <section className="py-24 bg-surface-alt">
       <div className="container">
         <div className="flex items-end justify-between mb-12">
           <div>
@@ -27,8 +31,8 @@ export function CommunityNotices({ notices }: CommunityNoticesProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {notices.map((notice, i) => {
-            const Icon = iconMap[notice.type];
+          {noticeList.map((notice, i) => {
+            const Icon = iconMap[notice.type] || Bell;
             return (
               <motion.div
                 key={notice.id}
@@ -70,6 +74,6 @@ export function CommunityNotices({ notices }: CommunityNoticesProps) {
           })}
         </div>
       </div>
-    </SectionReveal>
+    </section>
   );
 }

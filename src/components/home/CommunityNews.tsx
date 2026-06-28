@@ -1,22 +1,41 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { SectionReveal, GlassCard } from "@/components/ui";
-import { Article } from "@/types";
+import { useState, useEffect } from "react";
+import { GlassCard } from "@/components/ui";
+import type { Article } from "@/types";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { getArticles } from "@/lib/article-store";
 import Link from "next/link";
 
 interface CommunityNewsProps {
   articles: Article[];
 }
 
-export function CommunityNews({ articles }: CommunityNewsProps) {
+export function CommunityNews({ articles: initial }: CommunityNewsProps) {
+  const [articles, setArticles] = useState(initial);
+
+  useEffect(() => {
+    setArticles(getArticles());
+    function onStorage(e: StorageEvent) {
+      if (e.key === "3wbw_articles") setArticles(getArticles());
+    }
+    function onVisible() {
+      if (document.visibilityState === "visible") setArticles(getArticles());
+    }
+    window.addEventListener("storage", onStorage);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, []);
+
   const featured = articles.find((a) => a.featured);
   const rest = articles.filter((a) => !a.featured).slice(0, 3);
 
   return (
-    <SectionReveal className="py-24 bg-surface-alt">
+    <section className="py-24 bg-surface-alt">
       <div className="container">
         <div className="flex items-end justify-between mb-12">
           <div>
@@ -73,36 +92,29 @@ export function CommunityNews({ articles }: CommunityNewsProps) {
           <div className="flex flex-col gap-4">
             {rest.map((article, i) => (
               <Link key={article.id} href={`/news/${article.slug}`}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                >
-                  <GlassCard className="flex gap-4">
-                    <div
-                      role="img"
-                      aria-label={article.title}
-                      className="w-20 h-20 rounded-xl bg-cover bg-center flex-shrink-0"
-                      style={{ backgroundImage: `url(${article.coverImage})` }}
-                    />
-                    <div className="min-w-0">
-                      <span
-                        className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold text-white mb-1"
-                        style={{ backgroundColor: article.category.color }}
-                      >
-                        {article.category.name}
-                      </span>
-                      <h4 className="font-semibold text-sm leading-snug line-clamp-2">{article.title}</h4>
-                      <span className="text-xs text-muted mt-1 block">{formatDate(article.publishedAt)}</span>
-                    </div>
-                  </GlassCard>
-                </motion.div>
+                <GlassCard className="flex gap-4">
+                  <div
+                    role="img"
+                    aria-label={article.title}
+                    className="w-20 h-20 rounded-xl bg-cover bg-center flex-shrink-0"
+                    style={{ backgroundImage: `url(${article.coverImage})` }}
+                  />
+                  <div className="min-w-0">
+                    <span
+                      className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold text-white mb-1"
+                      style={{ backgroundColor: article.category.color }}
+                    >
+                      {article.category.name}
+                    </span>
+                    <h4 className="font-semibold text-sm leading-snug line-clamp-2">{article.title}</h4>
+                    <span className="text-xs text-muted mt-1 block">{formatDate(article.publishedAt)}</span>
+                  </div>
+                </GlassCard>
               </Link>
             ))}
           </div>
         </div>
       </div>
-    </SectionReveal>
+    </section>
   );
 }

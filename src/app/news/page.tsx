@@ -1,16 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { GlassCard, SectionReveal } from "@/components/ui";
-import { articles } from "@/lib/data";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { articles as staticArticles } from "@/lib/data";
+import { getArticles } from "@/lib/article-store";
 import { Calendar, Clock, ArrowRight, Search } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
 export default function News() {
+  const [articles, setArticles] = useState(staticArticles);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
+
+  useEffect(() => {
+    setArticles(getArticles());
+    function syncFromStorage(e: StorageEvent) {
+      if (e.key === "3wbw_articles") setArticles(getArticles());
+    }
+    function sync() { setArticles(getArticles()); }
+    window.addEventListener("storage", syncFromStorage);
+    window.addEventListener("focus", sync);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") sync();
+    });
+    return () => {
+      window.removeEventListener("storage", syncFromStorage);
+      window.removeEventListener("focus", sync);
+    };
+  }, []);
 
   const categories = ["all", "community", "security", "utilities", "events"];
   const filtered = articles.filter((a) => {
@@ -22,24 +42,11 @@ export default function News() {
 
   return (
     <>
-      <section className="relative pt-32 pb-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-graphite to-surface" />
-        <div className="container relative">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <span className="text-gold text-sm font-semibold tracking-widest uppercase">News</span>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mt-4 mb-6 text-ivory">
-              Community News
-            </h1>
-            <p className="text-lg text-ivory/60 max-w-xl">
-              Stay informed with the latest updates from around the enclosure.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHeader
+        label="News"
+        title="Community News"
+        description="Stay informed with the latest updates from around the enclosure."
+      />
 
       <section className="py-12 border-b border-border">
         <div className="container">

@@ -1,21 +1,26 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { SectionReveal, GlassCard } from "@/components/ui";
-import { Alert, Incident } from "@/types";
+import { GlassCard } from "@/components/ui";
+import { getAlerts } from "@/lib/alert-store";
+import { getIncidents } from "@/lib/incident-store";
 import { AlertTriangle, Shield, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-interface SecurityUpdatesProps {
-  alerts: Alert[];
-  incidents: Incident[];
-}
+export function SecurityUpdates() {
+  const [alerts, setAlerts] = useState(getAlerts());
+  const [incidents, setIncidents] = useState(getIncidents());
 
-export function SecurityUpdates({ alerts, incidents }: SecurityUpdatesProps) {
+  useEffect(() => {
+    setAlerts(getAlerts());
+    setIncidents(getIncidents());
+  }, []);
+
   const activeAlerts = alerts.filter((a) => a.active);
 
   return (
-    <SectionReveal className="py-24">
+    <section className="py-24">
       <div className="container">
         <div className="flex items-end justify-between mb-12">
           <div>
@@ -114,6 +119,6 @@ export function SecurityUpdates({ alerts, incidents }: SecurityUpdatesProps) {
           </div>
         </div>
       </div>
-    </SectionReveal>
+    </section>
   );
 }

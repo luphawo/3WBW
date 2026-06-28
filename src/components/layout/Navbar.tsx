@@ -13,7 +13,6 @@ const navLinks = [
   { href: "/news", label: "News" },
   { href: "/safety", label: "Safety" },
   { href: "/directory", label: "Directory" },
-  { href: "/marketplace", label: "Marketplace" },
   { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
 ];
@@ -75,7 +74,7 @@ export function Navbar() {
                 href={link.href}
                 aria-current={pathname === link.href ? "page" : undefined}
                 className={cn(
-                  "relative px-4 py-2 text-[15px] font-medium rounded-lg transition-colors duration-300",
+                  "relative px-4 py-2 text-[18px] font-medium rounded-lg transition-colors duration-300",
                   pathname === link.href
                     ? "text-forest"
                     : "text-black hover:text-forest"
@@ -139,7 +138,7 @@ export function Navbar() {
               onClick={() => setMobileOpen(false)}
               aria-hidden="true"
             />
-            <div className="absolute right-0 top-0 bottom-0 w-[300px] bg-surface dark:bg-graphite p-8 pt-24 shadow-2xl">
+            <div className="absolute right-0 top-0 bottom-0 w-[300px] bg-surface dark:bg-graphite p-8 pt-[132px] shadow-2xl">
               <nav aria-label="Mobile navigation">
                 <ul className="flex flex-col gap-2">
                   {navLinks.map((link, i) => (

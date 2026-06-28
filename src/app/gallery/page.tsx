@@ -1,21 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionReveal, GlassCard } from "@/components/ui";
-import { galleryImages } from "@/lib/data";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { getGalleryItems } from "@/lib/media-store";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+
+interface GalleryDisplayItem {
+  id: string;
+  src: string;
+  category: string;
+  caption: string;
+  width: number;
+  height: number;
+}
 
 const categories = ["all", "community", "event", "lifestyle", "security"];
 
 export default function Gallery() {
-  const [selectedImage, setSelectedImage] = useState<typeof galleryImages[0] | null>(null);
+  const [galleryItems, setGalleryItems] = useState<GalleryDisplayItem[]>([]);
+  const [selectedImage, setSelectedImage] = useState<GalleryDisplayItem | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [filter, setFilter] = useState("all");
 
-  const filtered = filter === "all" ? galleryImages : galleryImages.filter((img) => img.category === filter);
+  useEffect(() => {
+    const items = getGalleryItems().map((item) => ({
+      id: item.id,
+      src: item.src,
+      category: item.category,
+      caption: item.caption,
+      width: item.width || 800,
+      height: item.height || 600,
+    }));
+    setGalleryItems(items);
+  }, []);
 
-  const openImage = (image: typeof galleryImages[0], index: number) => {
+  const filtered = filter === "all" ? galleryItems : galleryItems.filter((img) => img.category === filter);
+
+  const openImage = (image: GalleryDisplayItem, index: number) => {
     setSelectedImage(image);
     setSelectedIndex(index);
   };
@@ -30,24 +53,11 @@ export default function Gallery() {
 
   return (
     <>
-      <section className="relative pt-32 pb-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-graphite to-surface" />
-        <div className="container relative">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <span className="text-gold text-sm font-semibold tracking-widest uppercase">Gallery</span>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mt-4 mb-6 text-ivory">
-              Community Album
-            </h1>
-            <p className="text-lg text-ivory/60 max-w-xl">
-              Moments captured across our community.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHeader
+        label="Gallery"
+        title="Community Album"
+        description="Moments captured across our community."
+      />
 
       <section className="py-12 border-b border-border">
         <div className="container">

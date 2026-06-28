@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { SectionReveal, GlassCard } from "@/components/ui";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { businesses } from "@/lib/data";
 import { Star, Phone, MapPin, Clock, Search } from "lucide-react";
 
@@ -27,24 +28,11 @@ export default function Directory() {
 
   return (
     <>
-      <section className="relative pt-32 pb-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-graphite to-surface" />
-        <div className="container relative">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <span className="text-gold text-sm font-semibold tracking-widest uppercase">Directory</span>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mt-4 mb-6 text-ivory">
-              Local Business Directory
-            </h1>
-            <p className="text-lg text-ivory/60 max-w-xl">
-              Trusted services and businesses recommended by your neighbours.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHeader
+        label="Directory"
+        title="Local Business Directory"
+        description="Trusted services and businesses recommended by your neighbours."
+      />
 
       <section className="py-12 border-b border-border">
         <div className="container">

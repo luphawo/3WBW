@@ -1,44 +1,104 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { SectionReveal, GlassCard } from "@/components/ui";
 import { Button } from "@/components/ui";
-import { Shield, Phone, AlertTriangle, Clock, MapPin, FileText } from "lucide-react";
-import { incidents, alerts } from "@/lib/data";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Shield, Phone, AlertTriangle, Clock, MapPin, FileText, X, Send } from "lucide-react";
+import { getIncidents, addIncident } from "@/lib/incident-store";
+import { getAlerts } from "@/lib/alert-store";
+import { incidents as staticIncidents, alerts as staticAlerts } from "@/lib/data";
 
 const emergencyContacts = [
-  { name: "SAPS Emergency", number: "10111", icon: Phone },
-  { name: "City of Joburg Emergency", number: "086 00 10111", icon: Phone },
-  { name: "Enclosure Security", number: "082 555 0199", icon: Shield },
+  {
+    name: "TRSS Security Services Control Room",
+    number: "086 111 4021 / 011 708 1895",
+    icon: Shield,
+  },
+  {
+    name: "Free Medical Services (TRSS clients only)",
+    number: "086 111 4021",
+    icon: Phone,
+  },
+  { name: "Cell Emergency", number: "112", icon: Phone },
+  { name: "Police", number: "10111", icon: Phone },
+  {
+    name: "City of Joburg Emergency Services",
+    number: "011 375 591",
+    icon: Phone,
+  },
+  {
+    name: "Douglasdale CPF",
+    number: "071 675 7156 / 071 675 7157",
+    icon: Phone,
+  },
   { name: "Netcare 911", number: "082 911", icon: Phone },
-  { name: "Joburg Water", number: "086 056 2874", icon: Phone },
-  { name: "Eskom (Load Shedding)", number: "086 003 7566", icon: AlertTriangle },
+  { name: "Pikitup", number: "011 712 5200", icon: Phone },
+  {
+    name: "Jhb Roads Agency",
+    number: "011 298 5000",
+    icon: Phone,
+  },
+  {
+    name: "Jhb Water",
+    number: "011 375 5555",
+    email: "customerserviceemails@jwater.co.za",
+    icon: Phone,
+  },
 ];
 
 export default function Safety() {
-  const activeAlerts = alerts.filter((a) => a.active);
+  const [alertList, setAlertList] = useState(staticAlerts);
+  const activeAlerts = alertList.filter((a) => a.active);
+  const [showForm, setShowForm] = useState(false);
+  const [incidentList, setIncidentList] = useState(staticIncidents);
+  const [formData, setFormData] = useState({
+    type: "general",
+    title: "",
+    description: "",
+    location: "",
+  });
+
+  useEffect(() => {
+    setIncidentList(getIncidents());
+    setAlertList(getAlerts());
+    if (window.location.search.includes("report=true")) {
+      setShowForm(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    function syncFromStorage(e: StorageEvent) {
+      if (e.key === "3wbw_incidents") {
+        setIncidentList(getIncidents());
+      }
+      if (e.key === "3wbw_alerts") {
+        setAlertList(getAlerts());
+      }
+    }
+    function sync() {
+      setIncidentList(getIncidents());
+      setAlertList(getAlerts());
+    }
+    window.addEventListener("storage", syncFromStorage);
+    window.addEventListener("focus", sync);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") sync();
+    });
+    return () => {
+      window.removeEventListener("storage", syncFromStorage);
+      window.removeEventListener("focus", sync);
+    };
+  }, []);
 
   return (
     <>
-      <section className="relative pt-32 pb-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-graphite to-surface" />
-        <div className="container relative">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <span className="text-gold text-sm font-semibold tracking-widest uppercase">Safety</span>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mt-4 mb-6 text-ivory">
-              Security &amp; Safety
-            </h1>
-            <p className="text-lg text-ivory/60 max-w-xl">
-              Your safety is our priority. Access emergency contacts, report incidents, 
-              and stay informed about security updates.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHeader
+        label="Safety"
+        title="Security &amp; Safety"
+        description="Your safety is our priority. Access emergency contacts, report incidents, and stay informed about security updates."
+      />
 
       <SectionReveal className="py-16">
         <div className="container">
@@ -62,14 +122,26 @@ export default function Safety() {
                         <div>
                           <p className="font-semibold text-sm">{contact.name}</p>
                           <p className="text-lg font-bold text-forest">{contact.number}</p>
+                          {contact.email && (
+                            <p className="text-xs text-gold mt-0.5">{contact.email}</p>
+                          )}
                         </div>
                       </div>
-                      <a
-                        href={`tel:${contact.number.replace(/\s/g, "")}`}
-                        className="p-2 rounded-lg bg-forest/10 text-forest hover:bg-forest/20 transition-colors"
-                      >
-                        <Phone className="w-4 h-4" />
-                      </a>
+                      {contact.email ? (
+                        <a
+                          href={`mailto:${contact.email}`}
+                          className="p-2 rounded-lg bg-forest/10 text-forest hover:bg-forest/20 transition-colors"
+                        >
+                          <Send className="w-4 h-4" />
+                        </a>
+                      ) : (
+                        <a
+                          href={`tel:${contact.number.split("/")[0].replace(/[^+\d]/g, "")}`}
+                          className="p-2 rounded-lg bg-forest/10 text-forest hover:bg-forest/20 transition-colors"
+                        >
+                          <Phone className="w-4 h-4" />
+                        </a>
+                      )}
                     </GlassCard>
                   </motion.div>
                 ))}
@@ -114,14 +186,108 @@ export default function Safety() {
               <h2 className="text-3xl font-bold">Recent Incidents</h2>
               <p className="text-text-secondary mt-1">Track reported incidents in the enclosure.</p>
             </div>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => setShowForm(!showForm)}>
               <FileText className="mr-2 w-4 h-4" />
-              Report Incident
+              {showForm ? "Cancel" : "Report Incident"}
             </Button>
           </div>
 
+          {showForm && (
+            <motion.div
+              id="incident-form"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              <GlassCard className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-lg">Report an Incident</h3>
+                  <button onClick={() => setShowForm(false)} className="p-1 rounded-lg hover:bg-surface-alt transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Incident Type</label>
+                    <select
+                      value={formData.type}
+                      onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-xl bg-surface-alt border border-border focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm appearance-none"
+                    >
+                      <option value="general">General</option>
+                      <option value="security">Security</option>
+                      <option value="safety">Safety</option>
+                      <option value="maintenance">Maintenance</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Title</label>
+                    <input
+                      type="text"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      placeholder="Brief title for the incident"
+                      className="w-full px-4 py-2.5 rounded-xl bg-surface-alt border border-border focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Description</label>
+                    <textarea
+                      rows={3}
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      placeholder="Describe what happened..."
+                      className="w-full px-4 py-2.5 rounded-xl bg-surface-alt border border-border focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm resize-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Location</label>
+                    <input
+                      type="text"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      placeholder="e.g. Plover Street"
+                      className="w-full px-4 py-2.5 rounded-xl bg-surface-alt border border-border focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-3 pt-2">
+                    <Button variant="ghost" size="sm" onClick={() => { setShowForm(false); setFormData({ type: "general", title: "", description: "", location: "" }); }}>
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => {
+                        if (!formData.title.trim() || !formData.description.trim()) return;
+                        const newIncident = {
+                          id: `inc-${Date.now()}`,
+                          type: formData.type as "security" | "safety" | "maintenance" | "general",
+                          title: formData.title,
+                          description: formData.description,
+                          status: "open" as const,
+                          reportedAt: new Date().toISOString(),
+                          updatedAt: new Date().toISOString(),
+                          reportedBy: "Resident",
+                          location: formData.location || "Unspecified",
+                          priority: "medium" as const,
+                        };
+                        addIncident(newIncident);
+                        setIncidentList(getIncidents());
+                        setShowForm(false);
+                        setFormData({ type: "general", title: "", description: "", location: "" });
+                      }}
+                    >
+                      <Send className="mr-2 w-4 h-4" />
+                      Submit Report
+                    </Button>
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.div>
+          )}
+
           <div className="space-y-4">
-            {incidents.map((incident, i) => (
+            {incidentList.map((incident, i) => (
               <motion.div
                 key={incident.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -148,7 +314,7 @@ export default function Safety() {
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {new Date(incident.reportedAt).toLocaleDateString()}
+                          {new Date(incident.reportedAt).toLocaleDateString('en-US')}
                         </span>
                         <span>{incident.reportedBy}</span>
                       </div>
@@ -173,15 +339,14 @@ export default function Safety() {
       <SectionReveal className="py-16">
         <div className="container">
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-forest to-forest-light p-8 md:p-12">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-gold/10 rounded-full blur-3xl" />
-            <div className="relative text-center max-w-lg mx-auto">
-              <Shield className="w-12 h-12 text-gold mx-auto mb-4" />
+            <div className="relative text-center max-w-xl mx-auto">
+              <Shield className="w-12 h-12 text-ivory/60 mx-auto mb-4" />
               <h2 className="text-3xl font-bold text-white mb-4">See Something? Say Something</h2>
               <p className="text-ivory/70 mb-6">
                 Report suspicious activity, maintenance issues, or safety concerns. 
                 Your vigilance keeps our community safe.
               </p>
-              <Button variant="gold" size="lg">
+              <Button variant="gold" size="lg" onClick={() => { setShowForm(true); document.getElementById('incident-form')?.scrollIntoView({ behavior: 'smooth' }); }}>
                 <AlertTriangle className="mr-2 w-5 h-5" />
                 Report an Incident
               </Button>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -13,14 +13,21 @@ import {
   Bell,
   ChevronLeft,
   LogOut,
-  Menu,
+  ExternalLink,
+  Store,
+  AlertTriangle,
+  Megaphone,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const sidebarLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/articles", label: "Articles", icon: FileText },
+  { href: "/admin/alerts", label: "Alerts", icon: Bell },
+  { href: "/admin/incidents", label: "Incidents", icon: AlertTriangle },
+  { href: "/admin/notices", label: "Notices", icon: Megaphone },
   { href: "/admin/media", label: "Media", icon: Image },
+  { href: "/admin/businesses", label: "Businesses", icon: Store },
   { href: "/admin/residents", label: "Residents", icon: Users },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
@@ -31,7 +38,18 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/admin/login");
+    router.refresh();
+  }
+
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -81,7 +99,7 @@ export default function AdminLayout({
           })}
         </nav>
 
-        <div className="p-2 border-t border-white/10">
+        <div className="p-2 border-t border-white/10 space-y-1">
           <Link
             href="/"
             className={cn(
@@ -89,9 +107,19 @@ export default function AdminLayout({
               collapsed && "justify-center px-2"
             )}
           >
-            <LogOut className="w-5 h-5" />
+            <ExternalLink className="w-5 h-5" />
             {!collapsed && <span>View Site</span>}
           </Link>
+          <button
+            onClick={handleLogout}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-ivory/60 hover:text-red-400 hover:bg-red-500/10 transition-all w-full",
+              collapsed && "justify-center px-2"
+            )}
+          >
+            <LogOut className="w-5 h-5" />
+            {!collapsed && <span>Logout</span>}
+          </button>
         </div>
       </aside>
 

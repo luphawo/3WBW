@@ -1,16 +1,50 @@
 "use client";
 
+import { useState, useEffect, use } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { GlassCard } from "@/components/ui";
-import { articles } from "@/lib/data";
-import { Calendar, Clock, ArrowLeft, Share2 } from "lucide-react";
+import { articles as staticArticles } from "@/lib/data";
+import { getArticles } from "@/lib/article-store";
+import type { Article } from "@/types";
+import { Calendar, Clock, ArrowLeft, Share2, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
-export default function ArticlePage() {
-  const params = useParams();
-  const article = articles.find((a) => a.slug === params.slug);
+export default function ArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = use(params);
+  const [article, setArticle] = useState<Article | null>(() => {
+    if (!slug) return null;
+    return staticArticles.find((a) => a.slug === slug) || null;
+  });
+
+  useEffect(() => {
+    if (!slug) return;
+    const found = getArticles().find((a) => a.slug === slug);
+    if (found) setArticle(found);
+    function syncFromStorage(e: StorageEvent) {
+      if (e.key === "3wbw_articles") {
+        const synced = getArticles().find((a) => a.slug === slug);
+        if (synced) setArticle(synced);
+      }
+    }
+    function sync() {
+      if (document.visibilityState !== "visible") return;
+      const synced = getArticles().find((a) => a.slug === slug);
+      if (synced) setArticle(synced);
+    }
+    window.addEventListener("storage", syncFromStorage);
+    window.addEventListener("focus", sync);
+    document.addEventListener("visibilitychange", sync);
+    return () => {
+      window.removeEventListener("storage", syncFromStorage);
+      window.removeEventListener("focus", sync);
+      document.removeEventListener("visibilitychange", sync);
+    };
+  }, [slug]);
 
   if (!article) {
     return (
@@ -83,7 +117,7 @@ export default function ArticlePage() {
       </section>
 
       <section className="py-16">
-        <div className="container max-w-3xl">
+        <div className="container max-w-5xl">
           <div className="flex items-center gap-2 mb-8">
             {article.tags.map((tag) => (
               <span
@@ -100,12 +134,55 @@ export default function ArticlePage() {
 
           <div className="prose prose-lg max-w-none">
             <p className="text-xl text-text-secondary leading-relaxed mb-8">{article.excerpt}</p>
-            <div className="h-64 rounded-2xl bg-surface-alt flex items-center justify-center text-muted">
-              Rich article content area — CMS integration coming soon
-            </div>
+            {article.content ? (
+              <div dangerouslySetInnerHTML={{ __html: article.content }} />
+            ) : (
+              <div className="h-64 rounded-2xl bg-surface-alt flex items-center justify-center text-muted">
+                No content yet
+              </div>
+            )}
           </div>
 
-          <div className="mt-12 pt-8 border-t border-border">
+          {(() => {
+            const all = getArticles();
+            const idx = all.findIndex((a) => a.id === article.id);
+            const prev = idx > 0 ? all[idx - 1] : null;
+            const next = idx < all.length - 1 ? all[idx + 1] : null;
+            return (
+          <div className="flex items-center justify-between mt-12 pt-8 border-t border-border">
+            <div>
+              {prev && (
+                <Link
+                  href={`/news/${prev.slug}`}
+                  className="group flex items-center gap-2 text-muted hover:text-text transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+                  <div className="text-right">
+                    <p className="text-xs text-muted">Previous</p>
+                    <p className="text-sm font-semibold">{prev.title}</p>
+                  </div>
+                </Link>
+              )}
+            </div>
+            <div>
+              {next && (
+                <Link
+                  href={`/news/${next.slug}`}
+                  className="group flex items-center gap-2 text-muted hover:text-text transition-colors"
+                >
+                  <div className="text-left">
+                    <p className="text-xs text-muted">Next</p>
+                    <p className="text-sm font-semibold">{next.title}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              )}
+            </div>
+          </div>
+            );
+          })()}
+
+          <div className="mt-8 pt-8 border-t border-border">
             <GlassCard className="flex items-center gap-4">
               <img
                 src={article.author.avatar}

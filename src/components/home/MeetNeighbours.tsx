@@ -38,7 +38,7 @@ export function MeetNeighbours({ residents }: MeetNeighboursProps) {
                 </div>
                 <h3 className="font-bold text-lg">{resident.name}</h3>
                 <p className="text-sm text-muted">
-                  Unit {resident.unit}, {resident.street}
+                  {resident.street}
                 </p>
                 <span
                   className={`inline-block mt-2 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full ${

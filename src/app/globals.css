@@ -8,13 +8,13 @@
   --color-ivory: #F5F0E8;
   --color-forest: #2C5F2E;
   --color-forest-light: #3A7A38;
-  --color-gold: #C4952A;
-  --color-gold-light: #D4A435;
-  --color-gold-dark: #9A7520;
+  --color-gold: #2C5F2E;
+  --color-gold-light: #3A7A38;
+  --color-gold-dark: #1E4220;
 
-  --color-surface: #F5F0E8;
-  --color-surface-alt: #EDE8DD;
-  --color-border: #E5DDD0;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F5F5F7;
+  --color-border: #E5E5E7;
   --color-muted: #8E8E93;
   --color-text: #1C1C1E;
   --color-text-secondary: #636366;
@@ -59,7 +59,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
   body {
-    background: var(--color-surface);
+    background: #FFFFFF;
     color: var(--color-text);
     font-family: "Poppins", sans-serif;
     overflow-x: hidden;
@@ -72,21 +72,21 @@
 
 @layer components {
   .glass {
-    background: rgba(245, 240, 232, 0.6);
+    background: rgba(245, 245, 247, 0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.06);
   }
   .dark .glass {
     background: rgba(28, 28, 30, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.06);
   }
   .glass-card {
-    background: rgba(245, 240, 232, 0.5);
+    background: rgba(245, 245, 247, 0.7);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(201, 168, 76, 0.08);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
   }
   .dark .glass-card {
     background: rgba(44, 44, 46, 0.5);
