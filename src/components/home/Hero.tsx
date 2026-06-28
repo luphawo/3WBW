@@ -115,7 +115,7 @@ export function Hero() {
           >
             <div className="flex items-center gap-3 text-ivory/60">
               <Users className="w-5 h-5 text-gold" />
-              <span className="text-sm">72 Homes</span>
+              <span className="text-sm">71 Homes</span>
             </div>
             <div className="flex items-center gap-3 text-ivory/60">
               <Shield className="w-5 h-5 text-gold" />

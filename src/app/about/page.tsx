@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Shield, Users, Trees, Home, ScrollText, Gauge, Key, PawPrint, Volume2, Trash2, TreePine, Fence, Banknote } from "lucide-react";
 
 const stats = [
-  { label: "Homes", value: "72", icon: Home },
+  { label: "Homes", value: "71", icon: Home },
   { label: "Years Established", value: "27", icon: ScrollText },
   { label: "Security", value: "24/7", icon: Shield },
 ];
@@ -123,7 +123,7 @@ export default function About() {
                   Our enclosure has been registered as an NPC with duly appointed directors, who ensure that governance is upheld e.g., annual general meetings.
                 </p>
                 <p>
-                  Today, 72 homes across three interconnected streets form a vibrant, secure, and close-knit community that embodies the best of suburban Sandton living.
+                  Today, 71 homes across three interconnected streets form a vibrant, secure, and close-knit community that embodies the best of suburban Sandton living.
                 </p>
                 <p>
                   We have an automated boom system, and are privileged to have a permanent vehicle, with armed guard, patrolling our three streets, 24/7, together with 14 cameras, which are linked to an off-site surveillance team. This level of security comes at a huge cost, hence the monthly levies that residents contribute.

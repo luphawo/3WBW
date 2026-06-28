@@ -17,6 +17,7 @@ import {
   Store,
   AlertTriangle,
   Megaphone,
+  DollarSign,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -26,6 +27,7 @@ const sidebarLinks = [
   { href: "/admin/alerts", label: "Alerts", icon: Bell },
   { href: "/admin/incidents", label: "Incidents", icon: AlertTriangle },
   { href: "/admin/notices", label: "Notices", icon: Megaphone },
+  { href: "/admin/levies", label: "Levies", icon: DollarSign },
   { href: "/admin/media", label: "Media", icon: Image },
   { href: "/admin/businesses", label: "Businesses", icon: Store },
   { href: "/admin/residents", label: "Residents", icon: Users },

@@ -6,6 +6,7 @@ import type {
   Resident,
   GalleryImage,
   Notice,
+  LevyMonth,
 } from "@/types";
 
 export const articles: Article[] = [
@@ -471,6 +472,36 @@ export const residents: Resident[] = [
     bio: "Community Manager. Here to help make our enclosure the best place to live in Fourways.",
     joinedAt: "2020-01-10",
     verified: true,
+  },
+];
+
+export const levyMonths: LevyMonth[] = [
+  {
+    id: "lm-1",
+    monthLabel: "April 2026",
+    streetCounts: [
+      { street: "Jacana Street", count: 28, total: 31 },
+      { street: "Kestrel Street", count: 16, total: 19 },
+      { street: "Plover Street", count: 18, total: 21 },
+    ],
+  },
+  {
+    id: "lm-2",
+    monthLabel: "May 2026",
+    streetCounts: [
+      { street: "Jacana Street", count: 29, total: 31 },
+      { street: "Kestrel Street", count: 17, total: 19 },
+      { street: "Plover Street", count: 19, total: 21 },
+    ],
+  },
+  {
+    id: "lm-3",
+    monthLabel: "June 2026",
+    streetCounts: [
+      { street: "Jacana Street", count: 30, total: 31 },
+      { street: "Kestrel Street", count: 18, total: 19 },
+      { street: "Plover Street", count: 20, total: 21 },
+    ],
   },
 ];
 

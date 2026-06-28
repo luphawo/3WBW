@@ -121,3 +121,15 @@ export interface Notice {
   expiresAt?: string;
   author: string;
 }
+
+export interface StreetCount {
+  street: string;
+  count: number;
+  total: number;
+}
+
+export interface LevyMonth {
+  id: string;
+  monthLabel: string;
+  streetCounts: StreetCount[];
+}
