@@ -1,36 +1,78 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/ui";
-import { FileText, Users, Bell, MessageSquare, TrendingUp, Eye, ThumbsUp, Activity } from "lucide-react";
+import {
+  FileText, Users, Bell, MessageSquare, Eye, Activity,
+  AlertTriangle, Building2, Megaphone, Image as ImageIcon,
+  ShieldCheck, Wrench
+} from "lucide-react";
 import Link from "next/link";
-
-const stats = [
-  { label: "Articles", value: "24", icon: FileText, change: "+12%", href: "/admin/articles", color: "text-blue-600 bg-blue-100 dark:bg-blue-900/20" },
-  { label: "Residents", value: "128", icon: Users, change: "+3", href: "/admin/residents", color: "text-green-600 bg-green-100 dark:bg-green-900/20" },
-  { label: "Active Alerts", value: "2", icon: Bell, change: "-1", href: "#", color: "text-orange-600 bg-orange-100 dark:bg-orange-900/20" },
-  { label: "Comments", value: "47", icon: MessageSquare, change: "+8", href: "#", color: "text-purple-600 bg-purple-100 dark:bg-purple-900/20" },
-];
-
-const chartData = [
-  { day: "Mon", visitors: 45, views: 120 },
-  { day: "Tue", visitors: 52, views: 145 },
-  { day: "Wed", visitors: 38, views: 98 },
-  { day: "Thu", visitors: 61, views: 178 },
-  { day: "Fri", visitors: 55, views: 156 },
-  { day: "Sat", visitors: 42, views: 112 },
-  { day: "Sun", visitors: 48, views: 134 },
-];
-
-const recentActivity = [
-  { action: "New article published", user: "Sarah Moolman", time: "2 hours ago", type: "article" },
-  { action: "Security alert updated", user: "James Ndlovu", time: "5 hours ago", type: "alert" },
-  { action: "New resident registered", user: "System", time: "1 day ago", type: "user" },
-  { action: "Comment moderated", user: "Admin", time: "1 day ago", type: "comment" },
-  { action: "Business listing approved", user: "Admin", time: "2 days ago", type: "business" },
-];
+import { getArticles } from "@/lib/article-store";
+import { getAlerts } from "@/lib/alert-store";
+import { getIncidents } from "@/lib/incident-store";
+import { getNotices } from "@/lib/notice-store";
+import { getMediaItems } from "@/lib/media-store";
+import { residents, businesses } from "@/lib/data";
+import type { Incident, Notice } from "@/types";
 
 export default function AdminDashboard() {
+  const [articleCount, setArticleCount] = useState(0);
+  const [activeAlertCount, setActiveAlertCount] = useState(0);
+  const [noticeCount, setNoticeCount] = useState(0);
+  const [incidentCount, setIncidentCount] = useState(0);
+  const [totalAlertCount, setTotalAlertCount] = useState(0);
+  const [mediaCount, setMediaCount] = useState(0);
+  const [openIncidents, setOpenIncidents] = useState<Incident[]>([]);
+  const [recentNotices, setRecentNotices] = useState<Notice[]>([]);
+  const [mediaByCategory, setMediaByCategory] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    setArticleCount(getArticles().length);
+    setActiveAlertCount(getAlerts().filter((a) => a.active).length);
+    setNoticeCount(getNotices().length);
+    const incs = getIncidents();
+    setIncidentCount(incs.length);
+    setOpenIncidents(incs.filter((i) => i.status === "open" || i.status === "investigating"));
+    setTotalAlertCount(getAlerts().length);
+    const items = getMediaItems();
+    setMediaCount(items.length);
+    setMediaByCategory(
+      items.reduce((acc, item) => {
+        acc[item.category] = (acc[item.category] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>)
+    );
+    setRecentNotices(getNotices().slice(0, 5));
+  }, []);
+
+  const stats = [
+    { label: "Articles", value: articleCount, icon: FileText, href: "/admin/articles", color: "text-blue-600 bg-blue-100 dark:bg-blue-900/20" },
+    { label: "Residents", value: residents.length, icon: Users, href: "/admin/residents", color: "text-green-600 bg-green-100 dark:bg-green-900/20" },
+    { label: "Active Alerts", value: activeAlertCount, icon: Bell, href: "/admin/alerts", color: "text-orange-600 bg-orange-100 dark:bg-orange-900/20" },
+    { label: "Notices", value: noticeCount, icon: MessageSquare, href: "/admin/notices", color: "text-purple-600 bg-purple-100 dark:bg-purple-900/20" },
+    { label: "Incidents", value: incidentCount, icon: Activity, href: "/admin/incidents", color: "text-red-600 bg-red-100 dark:bg-red-900/20" },
+    { label: "Media", value: mediaCount, icon: Eye, href: "/admin/media", color: "text-sky-600 bg-sky-100 dark:bg-sky-900/20" },
+  ];
+
+  const maxCategoryCount = Math.max(...Object.values(mediaByCategory), 1);
+
+  const categoryColors: Record<string, string> = {
+    community: "bg-blue-500",
+    lifestyle: "bg-green-500",
+    security: "bg-orange-500",
+    event: "bg-purple-500",
+    hero: "bg-rose-500",
+    branding: "bg-gray-500",
+  };
+
+  const incidentTypeCounts = {
+    security: openIncidents.filter((i) => i.type === "security").length,
+    maintenance: openIncidents.filter((i) => i.type === "maintenance").length,
+    general: openIncidents.filter((i) => i.type === "general").length,
+  };
+
   return (
     <div className="min-h-screen bg-surface-alt p-6 lg:p-10">
       <div className="max-w-7xl mx-auto">
@@ -50,18 +92,18 @@ export default function AdminDashboard() {
                 href="/"
                 className="text-sm text-forest font-semibold hover:underline"
               >
-                View Site →
+                View Site &rarr;
               </Link>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
             {stats.map((stat, i) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: i * 0.08 }}
               >
                 <Link href={stat.href}>
                   <GlassCard className="hover:shadow-md transition-shadow">
@@ -69,11 +111,6 @@ export default function AdminDashboard() {
                       <div className={`p-2.5 rounded-xl ${stat.color}`}>
                         <stat.icon className="w-5 h-5" />
                       </div>
-                      <span className={`text-xs font-semibold ${
-                        stat.change.startsWith("+") ? "text-green-600" : "text-red-600"
-                      }`}>
-                        {stat.change}
-                      </span>
                     </div>
                     <p className="text-2xl font-bold">{stat.value}</p>
                     <p className="text-xs text-muted">{stat.label}</p>
@@ -87,64 +124,65 @@ export default function AdminDashboard() {
             <div className="lg:col-span-2">
               <GlassCard>
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-bold text-lg">Weekly Traffic</h2>
-                  <div className="flex items-center gap-4 text-xs text-muted">
-                    <span className="flex items-center gap-1">
-                      <div className="w-2 h-2 rounded-full bg-forest" />
-                      Visitors
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <div className="w-2 h-2 rounded-full bg-gold" />
-                      Page Views
-                    </span>
+                  <h2 className="font-bold text-lg">Media by Category</h2>
+                  <ImageIcon className="w-4 h-4 text-muted" />
+                </div>
+                {Object.keys(mediaByCategory).length === 0 ? (
+                  <p className="text-sm text-muted py-8 text-center">No media items yet</p>
+                ) : (
+                  <div className="space-y-3">
+                    {Object.entries(mediaByCategory)
+                      .sort(([, a], [, b]) => b - a)
+                      .map(([category, count]) => (
+                        <div key={category} className="flex items-center gap-3">
+                          <span className="w-24 text-sm capitalize text-muted">{category}</span>
+                          <div className="flex-1 h-5 bg-surface-alt rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-700 ${categoryColors[category] || "bg-forest"}`}
+                              style={{ width: `${(count / maxCategoryCount) * 100}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-semibold w-6 text-right">{count}</span>
+                        </div>
+                      ))}
                   </div>
-                </div>
-                <div className="flex items-end justify-between h-40 gap-2">
-                  {chartData.map((day) => {
-                    const maxVal = Math.max(...chartData.map(d => Math.max(d.visitors, d.views)));
-                    return (
-                      <div key={day.day} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-                        <div
-                          className="w-full bg-gold/20 rounded-t-md transition-all duration-500"
-                          style={{ height: `${(day.views / maxVal) * 100}%` }}
-                        />
-                        <div
-                          className="w-full bg-forest/30 rounded-t-md transition-all duration-500"
-                          style={{ height: `${(day.visitors / maxVal) * 100}%` }}
-                        />
-                        <span className="text-[10px] text-muted mt-1">{day.day}</span>
-                      </div>
-                    );
-                  })}
-                </div>
+                )}
               </GlassCard>
             </div>
 
             <div>
               <GlassCard>
-                <h2 className="font-bold text-lg mb-4">Recent Activity</h2>
-                <div className="space-y-4">
-                  {recentActivity.map((activity, i) => (
-                    <div key={i} className="flex items-start gap-3 pb-3 border-b border-border/50 last:border-0">
-                      <div className={`p-1.5 rounded-lg ${
-                        activity.type === "article" ? "bg-blue-100 dark:bg-blue-900/20 text-blue-600" :
-                        activity.type === "alert" ? "bg-orange-100 dark:bg-orange-900/20 text-orange-600" :
-                        activity.type === "user" ? "bg-green-100 dark:bg-green-900/20 text-green-600" :
-                        "bg-purple-100 dark:bg-purple-900/20 text-purple-600"
-                      }`}>
-                        <Activity className="w-3 h-3" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{activity.action}</p>
-                        <div className="flex items-center gap-2 text-xs text-muted">
-                          <span>{activity.user}</span>
-                          <span>·</span>
-                          <span>{activity.time}</span>
+                <h2 className="font-bold text-lg mb-4">Recent Notices</h2>
+                {recentNotices.length === 0 ? (
+                  <p className="text-sm text-muted py-8 text-center">No notices yet</p>
+                ) : (
+                  <div className="space-y-3">
+                    {recentNotices.map((notice) => (
+                      <div key={notice.id} className="flex items-start gap-3 pb-3 border-b border-border/50 last:border-0">
+                        <div className={`p-1.5 rounded-lg ${
+                          notice.type === "warning"
+                            ? "bg-orange-100 dark:bg-orange-900/20 text-orange-600"
+                            : "bg-blue-100 dark:bg-blue-900/20 text-blue-600"
+                        }`}>
+                          {notice.pinned ? (
+                            <Megaphone className="w-3 h-3" />
+                          ) : (
+                            <MessageSquare className="w-3 h-3" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{notice.title}</p>
+                          <p className="text-xs text-muted">{notice.author} &middot; {notice.createdAt}</p>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
+                {noticeCount > 5 && (
+                  <Link href="/admin/notices" className="block text-sm text-forest font-semibold mt-4 hover:underline text-center">
+                    View all {noticeCount} notices &rarr;
+                  </Link>
+                )}
               </GlassCard>
             </div>
           </div>
@@ -157,9 +195,9 @@ export default function AdminDashboard() {
                   <FileText className="w-5 h-5 text-forest mx-auto mb-2" />
                   <span className="text-sm font-medium">New Article</span>
                 </Link>
-                <Link href="#" className="p-4 rounded-xl bg-gold/5 border border-gold/10 hover:bg-gold/10 transition-colors text-center">
+                <Link href="/admin/alerts" className="p-4 rounded-xl bg-gold/5 border border-gold/10 hover:bg-gold/10 transition-colors text-center">
                   <Bell className="w-5 h-5 text-gold mx-auto mb-2" />
-                  <span className="text-sm font-medium">Send Alert</span>
+                  <span className="text-sm font-medium">Manage Alerts</span>
                 </Link>
                 <Link href="/admin/residents" className="p-4 rounded-xl bg-blue-100/50 dark:bg-blue-900/20 border border-blue-200/50 dark:border-blue-800/30 hover:bg-blue-100 transition-colors text-center">
                   <Users className="w-5 h-5 text-blue-600 mx-auto mb-2" />
@@ -173,24 +211,56 @@ export default function AdminDashboard() {
             </GlassCard>
 
             <GlassCard>
-              <h2 className="font-bold text-lg mb-4">Engagement Overview</h2>
+              <h2 className="font-bold text-lg mb-4">Site Overview</h2>
               <div className="space-y-4">
-                {[
-                  { label: "Page Views", value: "1,247", icon: Eye, change: "+18%", color: "text-blue-600" },
-                  { label: "Active Residents", value: "89", icon: Users, change: "+5", color: "text-green-600" },
-                  { label: "Engagement Rate", value: "64%", icon: ThumbsUp, change: "+7%", color: "text-purple-600" },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between py-2">
-                    <div className="flex items-center gap-3">
-                      <item.icon className={`w-4 h-4 ${item.color}`} />
-                      <span className="text-sm">{item.label}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-bold">{item.value}</span>
-                      <span className="text-xs text-green-600">{item.change}</span>
-                    </div>
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-3">
+                    <Building2 className="w-4 h-4 text-forest" />
+                    <span className="text-sm">Businesses</span>
                   </div>
-                ))}
+                  <span className="font-bold">{businesses.length}</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-3">
+                    <AlertTriangle className="w-4 h-4 text-orange-600" />
+                    <span className="text-sm">Open Incidents</span>
+                  </div>
+                  <span className="font-bold">{openIncidents.length}</span>
+                </div>
+                {incidentTypeCounts.security > 0 && (
+                  <div className="flex items-center justify-between py-2 pl-7">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-3 h-3 text-red-500" />
+                      <span className="text-xs text-muted">Security</span>
+                    </div>
+                    <span className="text-xs font-semibold">{incidentTypeCounts.security}</span>
+                  </div>
+                )}
+                {incidentTypeCounts.maintenance > 0 && (
+                  <div className="flex items-center justify-between py-2 pl-7">
+                    <div className="flex items-center gap-2">
+                      <Wrench className="w-3 h-3 text-blue-500" />
+                      <span className="text-xs text-muted">Maintenance</span>
+                    </div>
+                    <span className="text-xs font-semibold">{incidentTypeCounts.maintenance}</span>
+                  </div>
+                )}
+                {incidentTypeCounts.general > 0 && (
+                  <div className="flex items-center justify-between py-2 pl-7">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="w-3 h-3 text-gray-500" />
+                      <span className="text-xs text-muted">General</span>
+                    </div>
+                    <span className="text-xs font-semibold">{incidentTypeCounts.general}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-3">
+                    <Bell className="w-4 h-4 text-green-600" />
+                    <span className="text-sm">Total Alerts</span>
+                  </div>
+                  <span className="font-bold">{totalAlertCount}</span>
+                </div>
               </div>
             </GlassCard>
           </div>
