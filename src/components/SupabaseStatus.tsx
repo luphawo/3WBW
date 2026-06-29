@@ -27,15 +27,19 @@ export function SupabaseStatus() {
   useEffect(() => {
     const out: string[] = []
     out.push(`isSupabaseConfigured: ${isSupabaseConfigured}`)
+    const envUrl = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_SUPABASE_URL : 'server'
+    out.push(`env URL: ${envUrl || '(empty)'}`)
     out.push(`supabase client: ${supabase ? 'created' : 'null'}`)
     if (supabase) {
-      const url = (supabase as any).supabaseUrl
-      out.push(`supabaseUrl: ${url}`)
+      try {
+        const url = (supabase as any).supabaseUrl || (supabase as any).rest?.url || 'unknown'
+        out.push(`client URL: ${url}`)
+      } catch { out.push('client URL: error reading') }
     }
     setDiag(out)
     if (supabase) {
-      supabase.from('alerts').select('*').limit(1).then(({ error }) => {
-        setDiag((d) => [...d, `test query error: ${error ? `${error.code}: ${error.message}` : 'none'}`])
+      supabase.from('alerts').select('*', { count: 'exact', head: true }).then(({ error, count }) => {
+        setDiag((d) => [...d, `test query: count=${count}, error: ${error ? `${error.code}: ${error.message}` : 'none'}`])
       })
     }
   }, [])
