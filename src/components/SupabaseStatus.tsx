@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { isSupabaseConfigured, forcePushTable } from '@/lib/supabase-store'
+import { supabase } from '@/lib/supabase'
 import { alerts } from '@/lib/data'
 import { incidents } from '@/lib/data'
 import { notices } from '@/lib/data'
@@ -21,6 +22,23 @@ const STORES = [
 export function SupabaseStatus() {
   const [results, setResults] = useState<{ label: string; status: string }[]>([])
   const [pushing, setPushing] = useState(false)
+  const [diag, setDiag] = useState<string[]>([])
+
+  useEffect(() => {
+    const out: string[] = []
+    out.push(`isSupabaseConfigured: ${isSupabaseConfigured}`)
+    out.push(`supabase client: ${supabase ? 'created' : 'null'}`)
+    if (supabase) {
+      const url = (supabase as any).supabaseUrl
+      out.push(`supabaseUrl: ${url}`)
+    }
+    setDiag(out)
+    if (supabase) {
+      supabase.from('alerts').select('*').limit(1).then(({ error }) => {
+        setDiag((d) => [...d, `test query error: ${error ? `${error.code}: ${error.message}` : 'none'}`])
+      })
+    }
+  }, [])
 
   async function handlePushAll() {
     setPushing(true)
@@ -47,6 +65,9 @@ export function SupabaseStatus() {
       <div className="flex items-center gap-2 mb-3">
         <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
         <span className="text-sm font-medium">Supabase connected</span>
+      </div>
+      <div className="mb-4 p-3 rounded-lg bg-surface-alt border border-border font-mono text-xs space-y-1">
+        {diag.map((d, i) => <div key={i}>{d}</div>)}
       </div>
       <p className="text-xs text-text-secondary mb-4">
         Data syncs automatically on each page load. Click below to force a full push of all data.
