@@ -25,22 +25,19 @@ export function SupabaseStatus() {
   const [diag, setDiag] = useState<string[]>([])
 
   useEffect(() => {
-    const out: string[] = []
-    out.push(`isSupabaseConfigured: ${isSupabaseConfigured}`)
-    const envUrl = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_SUPABASE_URL : 'server'
-    out.push(`env URL: ${envUrl || '(empty)'}`)
-    out.push(`supabase client: ${supabase ? 'created' : 'null'}`)
-    if (supabase) {
-      try {
-        const url = (supabase as any).supabaseUrl || (supabase as any).rest?.url || 'unknown'
-        out.push(`client URL: ${url}`)
-      } catch { out.push('client URL: error reading') }
-    }
-    setDiag(out)
-    if (supabase) {
-      supabase.from('alerts').select('*', { count: 'exact', head: true }).then(({ error, count }) => {
-        setDiag((d) => [...d, `test query: count=${count}, error: ${error ? `${error.code}: ${error.message}` : 'none'}`])
-      })
+    try {
+      const out: string[] = []
+      out.push(`supabase: ${supabase ? 'created' : 'null'}`)
+      if (supabase) {
+        const url = (supabase as any).supabaseUrl || '?'
+        out.push(`url: ${url}`)
+        supabase.from('alerts').select('*', { count: 'exact', head: true }).then((r) => {
+          setDiag((d) => [...d, `test: count=${r.count}, err=${r.error ? r.error.message : 'none'}`])
+        })
+      }
+      setDiag(out)
+    } catch (e: any) {
+      setDiag([`err: ${e?.message || e}`])
     }
   }, [])
 
