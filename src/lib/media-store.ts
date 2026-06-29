@@ -25,54 +25,55 @@ const STATIC_MEDIA: MediaItem[] = [
   })),
 ]
 
-const STORAGE_KEY = '3wbw_media_overrides'
-
-interface MediaOverrides {
-  updates: Record<string, Partial<MediaItem>>
-  hidden: string[]
-}
+const STORAGE_KEY = '3wbw_media'
 
 function isBrowser(): boolean {
   return typeof window !== 'undefined'
 }
 
-function loadOverrides(): MediaOverrides {
-  if (!isBrowser()) return { updates: {}, hidden: [] }
+function loadMedia(): MediaItem[] {
+  if (!isBrowser()) return [...STATIC_MEDIA]
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) return JSON.parse(stored) as MediaOverrides
+    if (stored) {
+      const parsed = JSON.parse(stored) as MediaItem[]
+      if (parsed.length > 0) return parsed
+    }
   } catch { /* ignore */ }
-  return { updates: {}, hidden: [] }
+  return [...STATIC_MEDIA]
 }
 
-function saveOverrides(overrides: MediaOverrides): void {
+function saveMedia(items: MediaItem[]): void {
   if (!isBrowser()) return
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
   } catch { /* ignore */ }
 }
 
 export function getMediaItems(): MediaItem[] {
-  const overrides = loadOverrides()
-  return STATIC_MEDIA
-    .filter((item) => !overrides.hidden.includes(item.id))
-    .map((item) => (overrides.updates[item.id] ? { ...item, ...overrides.updates[item.id] } : item))
+  return loadMedia()
 }
 
 export function getGalleryItems(): MediaItem[] {
-  return getMediaItems().filter((item) => item.category !== 'hero' && item.category !== 'branding')
+  return loadMedia().filter((item) => item.category !== 'hero' && item.category !== 'branding' && !item.hidden)
+}
+
+export function addMediaItem(item: MediaItem): void {
+  const list = loadMedia()
+  list.unshift(item)
+  saveMedia(list)
 }
 
 export function updateMediaItem(id: string, updates: Partial<MediaItem>): void {
-  const overrides = loadOverrides()
-  overrides.updates[id] = { ...(overrides.updates[id] || {}), ...updates }
-  saveOverrides(overrides)
+  const list = loadMedia()
+  const idx = list.findIndex((m) => m.id === id)
+  if (idx !== -1) {
+    list[idx] = { ...list[idx], ...updates }
+    saveMedia(list)
+  }
 }
 
 export function deleteMediaItem(id: string): void {
-  const overrides = loadOverrides()
-  if (!overrides.hidden.includes(id)) {
-    overrides.hidden.push(id)
-  }
-  saveOverrides(overrides)
+  const list = loadMedia().filter((m) => m.id !== id)
+  saveMedia(list)
 }

@@ -54,11 +54,11 @@ export function LevyChart() {
       <div className="container">
         <div className="text-center mb-12">
           <span className="text-gold text-sm font-semibold tracking-widest uppercase">
-            Levy Contributions
+            Levies
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold mt-2">Contributing Homeowners</h2>
           <p className="text-text-secondary mt-4 max-w-lg mx-auto">
-            Number of paying households per street, updated monthly.
+            Number of paying households per street, updated monthly. If more households were to contribute, our levies per household would probably be lower.
           </p>
         </div>
 

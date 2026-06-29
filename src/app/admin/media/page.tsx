@@ -5,11 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui";
 import { GlassCard } from "@/components/ui";
-import { Upload, Search, Grid, List, X } from "lucide-react";
-import { getMediaItems, updateMediaItem, deleteMediaItem } from "@/lib/media-store";
+import { Upload, Search, Grid, List, X, Link2 } from "lucide-react";
+import { getMediaItems, addMediaItem, updateMediaItem, deleteMediaItem } from "@/lib/media-store";
 import type { MediaItem } from "@/lib/media-store";
 
 const categories = ["all", "hero", "branding", "community", "event", "lifestyle", "security"];
+const uploadCategories = categories.filter((c) => c !== "all");
 
 export default function AdminMedia() {
   const [search, setSearch] = useState("");
@@ -18,6 +19,8 @@ export default function AdminMedia() {
   const [mediaList, setMediaList] = useState<MediaItem[]>([]);
   const [editing, setEditing] = useState<MediaItem | null>(null);
   const [editForm, setEditForm] = useState({ caption: "", category: "" });
+  const [showUpload, setShowUpload] = useState(false);
+  const [uploadForm, setUploadForm] = useState({ src: "", caption: "", category: "community" });
 
   const refresh = useCallback(() => setMediaList(getMediaItems()), []);
 
@@ -60,11 +63,90 @@ export default function AdminMedia() {
               <h1 className="text-3xl font-bold">Media Library</h1>
               <p className="text-text-secondary mt-1">Browse all media assets used across the site.</p>
             </div>
-            <Button variant="primary" size="sm">
+            <Button variant="primary" size="sm" onClick={() => setShowUpload(!showUpload)}>
               <Upload className="mr-2 w-4 h-4" />
-              Upload Media
+              {showUpload ? "Cancel" : "Upload Media"}
             </Button>
           </div>
+
+          <AnimatePresence>
+            {showUpload && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-6 overflow-hidden"
+              >
+                <GlassCard>
+                  <h3 className="font-bold text-lg mb-4">Add Media</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-semibold mb-2">Image URL</label>
+                      <input
+                        type="text"
+                        value={uploadForm.src}
+                        onChange={(e) => setUploadForm({ ...uploadForm, src: e.target.value })}
+                        placeholder="/gallery/your-image.webp"
+                        className="w-full px-4 py-2.5 rounded-xl bg-surface-alt border border-border focus:outline-none focus:ring-2 focus:ring-forest/30 text-sm"
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Caption</label>
+                        <input
+                          type="text"
+                          value={uploadForm.caption}
+                          onChange={(e) => setUploadForm({ ...uploadForm, caption: e.target.value })}
+                          placeholder="Brief description"
+                          className="w-full px-4 py-2.5 rounded-xl bg-surface-alt border border-border focus:outline-none focus:ring-2 focus:ring-forest/30 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Category</label>
+                        <select
+                          value={uploadForm.category}
+                          onChange={(e) => setUploadForm({ ...uploadForm, category: e.target.value })}
+                          className="w-full px-4 py-2.5 rounded-xl bg-surface-alt border border-border focus:outline-none focus:ring-2 focus:ring-forest/30 text-sm"
+                        >
+                          {uploadCategories.map((cat) => (
+                            <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => {
+                          if (!uploadForm.src.trim()) return;
+                          addMediaItem({
+                            id: `media-${Date.now()}`,
+                            src: uploadForm.src.trim(),
+                            caption: uploadForm.caption.trim(),
+                            category: uploadForm.category,
+                          });
+                          refresh();
+                          setShowUpload(false);
+                          setUploadForm({ src: "", caption: "", category: "community" });
+                        }}
+                      >
+                        <Link2 className="mr-2 w-4 h-4" />
+                        Add Media
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => { setShowUpload(false); setUploadForm({ src: "", caption: "", category: "community" }); }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <GlassCard className="mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

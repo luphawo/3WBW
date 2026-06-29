@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { GlassCard } from "@/components/ui";
-import { residents as initialResidents } from "@/lib/data";
+import { getResidents, deleteResident as storeDelete } from "@/lib/resident-store";
+import { residents as staticResidents } from "@/lib/data";
 import { Plus, Search, Edit, Eye, Trash2, Shield, Mail } from "lucide-react";
 
 export default function AdminResidents() {
   const [search, setSearch] = useState("");
-  const [residentList, setResidentList] = useState(initialResidents);
+  const [residentList, setResidentList] = useState(staticResidents);
+
+  useEffect(() => { setResidentList(getResidents()); }, []);
 
   const filtered = residentList.filter((r) =>
     r.name.toLowerCase().includes(search.toLowerCase())
@@ -17,7 +20,8 @@ export default function AdminResidents() {
 
   const handleDelete = (id: string, name: string) => {
     if (window.confirm(`Delete ${name}? This cannot be undone.`)) {
-      setResidentList((prev) => prev.filter((r) => r.id !== id));
+      storeDelete(id);
+      setResidentList(getResidents());
     }
   };
 

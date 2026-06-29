@@ -97,7 +97,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
             {stats.map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -106,14 +106,12 @@ export default function AdminDashboard() {
                 transition={{ delay: i * 0.08 }}
               >
                 <Link href={stat.href}>
-                  <GlassCard className="hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className={`p-2.5 rounded-xl ${stat.color}`}>
-                        <stat.icon className="w-5 h-5" />
-                      </div>
+                  <GlassCard className="hover:shadow-md transition-shadow p-4 sm:p-6">
+                    <div className={`w-fit p-2 rounded-lg sm:p-2.5 sm:rounded-xl mb-2 sm:mb-3 ${stat.color}`}>
+                      <stat.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
-                    <p className="text-2xl font-bold">{stat.value}</p>
-                    <p className="text-xs text-muted">{stat.label}</p>
+                    <p className="text-xl sm:text-2xl font-bold">{stat.value}</p>
+                    <p className="text-xs text-muted truncate">{stat.label}</p>
                   </GlassCard>
                 </Link>
               </motion.div>

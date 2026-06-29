@@ -3,16 +3,34 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 import { GlassCard } from "@/components/ui";
+import { addResident } from "@/lib/resident-store";
 import { Save } from "lucide-react";
 
 export default function NewResident() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [street, setStreet] = useState("");
   const [role, setRole] = useState("resident");
   const [bio, setBio] = useState("");
   const [verified, setVerified] = useState(true);
+
+  const handleSave = () => {
+    if (!name.trim() || !street) return;
+    addResident({
+      id: `resident-${Date.now()}`,
+      name: name.trim(),
+      unit: "",
+      street,
+      role: role as "resident" | "trustee" | "admin",
+      bio: bio.trim(),
+      joinedAt: new Date().toISOString().split("T")[0],
+      verified,
+    });
+    router.push("/admin/residents");
+  };
 
   return (
     <div className="min-h-screen bg-surface-alt p-6 lg:p-10">
@@ -30,7 +48,7 @@ export default function NewResident() {
               <p className="text-text-secondary mt-1">Add a new resident to the community.</p>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="primary" size="sm">
+              <Button variant="primary" size="sm" onClick={handleSave}>
                 <Save className="mr-2 w-4 h-4" />
                 Save Resident
               </Button>

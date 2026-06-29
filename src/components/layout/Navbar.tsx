@@ -56,13 +56,13 @@ export function Navbar() {
       >
         <div className="container flex items-center justify-between h-[120px]">
           <Link href="/" className="flex items-center gap-3 group" aria-label="3WBW Threeways Birdwatch — home">
-            <div className="w-[115px] h-[115px] flex items-center justify-center overflow-hidden">
+            <div className="w-[90px] h-[90px] sm:w-[115px] sm:h-[115px] flex items-center justify-center overflow-hidden">
               <img
                 src="/3wbw-logo.png"
                 alt="3WBW Threeways Birdwatch"
                 width={115}
                 height={115}
-                className="w-[115px] h-[115px] object-contain"
+                className="w-[90px] h-[90px] sm:w-[115px] sm:h-[115px] object-contain"
               />
             </div>
           </Link>

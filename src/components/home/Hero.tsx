@@ -62,7 +62,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[1.05] tracking-tight text-ivory mb-6"
+            className="text-[2.5rem] sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.1] sm:leading-[1.05] tracking-tight text-ivory mb-4 sm:mb-6"
           >
             Connected Living
             <br />
@@ -75,7 +75,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-lg sm:text-xl text-ivory/70 max-w-xl mb-10 leading-relaxed"
+            className="text-sm sm:text-lg xl:text-xl text-ivory/70 max-w-xl mb-6 sm:mb-10 leading-relaxed"
           >
             The Threeways Birdwatch security enclosure (encompassing Plover Street, Jacana Street,
             and Kestrel Avenue) operates under the formal authority of the City of Johannesburg,
@@ -89,19 +89,19 @@ export function Hero() {
             className="flex flex-wrap gap-4"
           >
             <Link href="/news">
-              <Button variant="gold" size="lg" className="group">
+              <Button variant="gold" size="md" className="group sm:text-base text-sm">
                 Latest Updates
-                <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
             <Link href="/contact">
-              <Button variant="outline" size="lg" className="text-ivory border-ivory/30 hover:bg-ivory/10">
+              <Button variant="outline" size="md" className="text-ivory border-ivory/30 hover:bg-ivory/10 sm:text-base text-sm">
                 Contact Us
               </Button>
             </Link>
             <Link href="/safety?report=true">
-              <Button variant="ghost" size="lg" className="text-ivory/70 hover:text-ivory">
-                <Shield className="mr-2 w-5 h-5" />
+              <Button variant="ghost" size="md" className="text-ivory/70 hover:text-ivory sm:text-base text-sm">
+                <Shield className="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
                 Report an Issue
               </Button>
             </Link>
@@ -111,19 +111,19 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 1.2 }}
-            className="flex items-center gap-8 mt-16"
+            className="flex flex-wrap items-center gap-x-6 gap-y-3 sm:gap-8 mt-10 sm:mt-16"
           >
-            <div className="flex items-center gap-3 text-ivory/60">
-              <Users className="w-5 h-5 text-gold" />
-              <span className="text-sm">71 Homes</span>
+            <div className="flex items-center gap-2 sm:gap-3 text-ivory/60">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-gold shrink-0" />
+              <span className="text-xs sm:text-sm">71 Homes</span>
             </div>
-            <div className="flex items-center gap-3 text-ivory/60">
-              <Shield className="w-5 h-5 text-gold" />
-              <span className="text-sm">24/7 Security</span>
+            <div className="flex items-center gap-2 sm:gap-3 text-ivory/60">
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-gold shrink-0" />
+              <span className="text-xs sm:text-sm">24/7 Security</span>
             </div>
-            <div className="flex items-center gap-3 text-ivory/60">
-              <MapPin className="w-5 h-5 text-gold" />
-              <span className="text-sm">Fourways, Sandton</span>
+            <div className="flex items-center gap-2 sm:gap-3 text-ivory/60">
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-gold shrink-0" />
+              <span className="text-xs sm:text-sm">Fourways, Sandton</span>
             </div>
           </motion.div>
         </div>

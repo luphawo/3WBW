@@ -114,30 +114,28 @@ export default function Safety() {
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.05 }}
                   >
-                    <GlassCard className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/20 text-red-600">
-                          <contact.icon className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-sm">{contact.name}</p>
-                          <p className="text-lg font-bold text-forest">{contact.number}</p>
-                          {contact.email && (
-                            <p className="text-xs text-gold mt-0.5">{contact.email}</p>
-                          )}
-                        </div>
+                    <GlassCard className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/20 text-red-600 shrink-0">
+                        <contact.icon className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-sm">{contact.name}</p>
+                        <p className="text-sm sm:text-lg font-bold text-forest break-words">{contact.number}</p>
+                        {contact.email && (
+                          <p className="text-xs text-gold mt-0.5 break-words">{contact.email}</p>
+                        )}
                       </div>
                       {contact.email ? (
                         <a
                           href={`mailto:${contact.email}`}
-                          className="p-2 rounded-lg bg-forest/10 text-forest hover:bg-forest/20 transition-colors"
+                          className="p-2 rounded-lg bg-forest/10 text-forest hover:bg-forest/20 transition-colors shrink-0"
                         >
                           <Send className="w-4 h-4" />
                         </a>
                       ) : (
                         <a
                           href={`tel:${contact.number.split("/")[0].replace(/[^+\d]/g, "")}`}
-                          className="p-2 rounded-lg bg-forest/10 text-forest hover:bg-forest/20 transition-colors"
+                          className="p-2 rounded-lg bg-forest/10 text-forest hover:bg-forest/20 transition-colors shrink-0"
                         >
                           <Phone className="w-4 h-4" />
                         </a>
@@ -181,12 +179,12 @@ export default function Safety() {
 
       <SectionReveal className="py-16 bg-surface-alt">
         <div className="container">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold">Recent Incidents</h2>
+            <div className="flex flex-col sm:flex-row sm:items-end gap-3 mb-8">
+            <div className="flex-1">
+              <h2 className="text-2xl sm:text-3xl font-bold">Recent Incidents</h2>
               <p className="text-text-secondary mt-1">Track reported incidents in the enclosure.</p>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => setShowForm(!showForm)}>
+            <Button variant="ghost" size="sm" onClick={() => setShowForm(!showForm)} className="w-full sm:w-auto">
               <FileText className="mr-2 w-4 h-4" />
               {showForm ? "Cancel" : "Report Incident"}
             </Button>
@@ -295,40 +293,42 @@ export default function Safety() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
               >
-                <GlassCard className="flex items-start justify-between">
-                  <div className="flex items-start gap-4">
-                    <div className={`p-2 rounded-lg ${
+                <GlassCard className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
+                  <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div className={`p-2 rounded-lg shrink-0 ${
                       incident.type === "security"
                         ? "bg-red-100 dark:bg-red-900/20 text-red-600"
                         : "bg-blue-100 dark:bg-blue-900/20 text-blue-600"
                     }`}>
                       <Shield className="w-5 h-5" />
                     </div>
-                    <div>
-                      <h3 className="font-semibold">{incident.title}</h3>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="font-semibold text-sm sm:text-base">{incident.title}</h3>
+                        <span className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full shrink-0 ${
+                          incident.status === "investigating"
+                            ? "bg-orange-100 dark:bg-orange-900/20 text-orange-600"
+                            : incident.status === "open"
+                            ? "bg-blue-100 dark:bg-blue-900/20 text-blue-600"
+                            : "bg-green-100 dark:bg-green-900/20 text-green-600"
+                        }`}>
+                          {incident.status}
+                        </span>
+                      </div>
                       <p className="text-sm text-text-secondary mt-1">{incident.description}</p>
-                      <div className="flex items-center gap-4 mt-2 text-xs text-muted">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-muted">
                         <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
+                          <MapPin className="w-3 h-3 shrink-0" />
                           {incident.location}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
+                          <Clock className="w-3 h-3 shrink-0" />
                           {new Date(incident.reportedAt).toLocaleDateString('en-US')}
                         </span>
                         <span>{incident.reportedBy}</span>
                       </div>
                     </div>
                   </div>
-                  <span className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full ${
-                    incident.status === "investigating"
-                      ? "bg-orange-100 dark:bg-orange-900/20 text-orange-600"
-                      : incident.status === "open"
-                      ? "bg-blue-100 dark:bg-blue-900/20 text-blue-600"
-                      : "bg-green-100 dark:bg-green-900/20 text-green-600"
-                  }`}>
-                    {incident.status}
-                  </span>
                 </GlassCard>
               </motion.div>
             ))}

@@ -3,21 +3,28 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 import { GlassCard } from "@/components/ui";
-import { residents } from "@/lib/data";
+import { getResident, updateResident } from "@/lib/resident-store";
 import { Save, ArrowLeft } from "lucide-react";
 
 export default function EditResident() {
   const params = useParams();
-  const resident = residents.find((r) => r.id === params.id);
+  const router = useRouter();
+  const resident = getResident(params.id as string);
 
   const [name, setName] = useState(resident?.name ?? "");
   const [street, setStreet] = useState(resident?.street ?? "");
   const [role, setRole] = useState<"resident" | "trustee" | "admin">(resident?.role ?? "resident");
   const [bio, setBio] = useState(resident?.bio ?? "");
   const [verified, setVerified] = useState(resident?.verified ?? true);
+
+  const handleSave = () => {
+    if (!resident || !name.trim()) return;
+    updateResident(resident.id, { name: name.trim(), street, role, bio: bio.trim(), verified });
+    router.push("/admin/residents");
+  };
 
   if (!resident) {
     return (
@@ -48,7 +55,7 @@ export default function EditResident() {
               <p className="text-text-secondary mt-1">{resident.name}</p>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="primary" size="sm">
+              <Button variant="primary" size="sm" onClick={handleSave}>
                 <Save className="mr-2 w-4 h-4" />
                 Save Changes
               </Button>
