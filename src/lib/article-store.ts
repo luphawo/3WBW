@@ -1,5 +1,6 @@
 import { articles as initialArticles } from './data'
 import type { Article } from '@/types'
+import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_articles'
 
@@ -37,10 +38,17 @@ export function getArticles(): Article[] {
   return loadArticles()
 }
 
+export async function seedArticlesFromSupabase(): Promise<void> {
+  if (!isSupabaseConfigured) return
+  const remote = await supabaseGet<Article>('articles', { column: 'published_at' })
+  if (remote.length > 0) saveArticles(remote)
+}
+
 export function addArticle(article: Article): void {
   const list = loadArticles()
   list.unshift(article)
   saveArticles(list)
+  if (isSupabaseConfigured) supabaseAdd('articles', article)
 }
 
 export function updateArticle(id: string, updates: Partial<Article>): void {
@@ -49,10 +57,12 @@ export function updateArticle(id: string, updates: Partial<Article>): void {
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveArticles(list)
+    if (isSupabaseConfigured) supabaseUpdate('articles', id, updates)
   }
 }
 
 export function deleteArticle(id: string): void {
   const list = loadArticles().filter((a) => a.id !== id)
   saveArticles(list)
+  if (isSupabaseConfigured) supabaseDelete('articles', id)
 }

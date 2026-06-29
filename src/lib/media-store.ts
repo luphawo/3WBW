@@ -1,5 +1,6 @@
 import { galleryImages } from './data'
 import type { GalleryImage } from '@/types'
+import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
 
 export interface MediaItem {
   id: string
@@ -58,10 +59,17 @@ export function getGalleryItems(): MediaItem[] {
   return loadMedia().filter((item) => item.category !== 'hero' && item.category !== 'branding' && !item.hidden)
 }
 
+export async function seedMediaFromSupabase(): Promise<void> {
+  if (!isSupabaseConfigured) return
+  const remote = await supabaseGet<MediaItem>('media')
+  if (remote.length > 0) saveMedia(remote)
+}
+
 export function addMediaItem(item: MediaItem): void {
   const list = loadMedia()
   list.unshift(item)
   saveMedia(list)
+  if (isSupabaseConfigured) supabaseAdd('media', item)
 }
 
 export function updateMediaItem(id: string, updates: Partial<MediaItem>): void {
@@ -70,10 +78,12 @@ export function updateMediaItem(id: string, updates: Partial<MediaItem>): void {
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveMedia(list)
+    if (isSupabaseConfigured) supabaseUpdate('media', id, updates)
   }
 }
 
 export function deleteMediaItem(id: string): void {
   const list = loadMedia().filter((m) => m.id !== id)
   saveMedia(list)
+  if (isSupabaseConfigured) supabaseDelete('media', id)
 }

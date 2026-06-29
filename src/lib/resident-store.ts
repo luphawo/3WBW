@@ -1,5 +1,6 @@
 import { residents as initialResidents } from './data'
 import type { Resident } from '@/types'
+import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_residents'
 
@@ -34,10 +35,17 @@ export function getResident(id: string): Resident | undefined {
   return loadResidents().find((r) => r.id === id)
 }
 
+export async function seedResidentsFromSupabase(): Promise<void> {
+  if (!isSupabaseConfigured) return
+  const remote = await supabaseGet<Resident>('residents', { column: 'joined_at' })
+  if (remote.length > 0) saveResidents(remote)
+}
+
 export function addResident(resident: Resident): void {
   const list = loadResidents()
   list.push(resident)
   saveResidents(list)
+  if (isSupabaseConfigured) supabaseAdd('residents', resident)
 }
 
 export function updateResident(id: string, updates: Partial<Resident>): void {
@@ -46,10 +54,12 @@ export function updateResident(id: string, updates: Partial<Resident>): void {
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveResidents(list)
+    if (isSupabaseConfigured) supabaseUpdate('residents', id, updates)
   }
 }
 
 export function deleteResident(id: string): void {
   const list = loadResidents().filter((r) => r.id !== id)
   saveResidents(list)
+  if (isSupabaseConfigured) supabaseDelete('residents', id)
 }

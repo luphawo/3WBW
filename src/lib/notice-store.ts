@@ -1,5 +1,6 @@
 import { notices as initialNotices } from './data'
 import type { Notice } from '@/types'
+import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_notices'
 
@@ -30,10 +31,17 @@ export function getNotices(): Notice[] {
   return loadNotices()
 }
 
+export async function seedNoticesFromSupabase(): Promise<void> {
+  if (!isSupabaseConfigured) return
+  const remote = await supabaseGet<Notice>('notices', { column: 'created_at' })
+  if (remote.length > 0) saveNotices(remote)
+}
+
 export function addNotice(notice: Notice): void {
   const list = loadNotices()
   list.unshift(notice)
   saveNotices(list)
+  if (isSupabaseConfigured) supabaseAdd('notices', notice)
 }
 
 export function updateNotice(id: string, updates: Partial<Notice>): void {
@@ -42,12 +50,8 @@ export function updateNotice(id: string, updates: Partial<Notice>): void {
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveNotices(list)
+    if (isSupabaseConfigured) supabaseUpdate('notices', id, updates)
   }
-}
-
-export function deleteNotice(id: string): void {
-  const list = loadNotices().filter((n) => n.id !== id)
-  saveNotices(list)
 }
 
 export function togglePinNotice(id: string): void {
@@ -56,5 +60,12 @@ export function togglePinNotice(id: string): void {
   if (idx !== -1) {
     list[idx] = { ...list[idx], pinned: !list[idx].pinned }
     saveNotices(list)
+    if (isSupabaseConfigured) supabaseUpdate('notices', id, { pinned: list[idx].pinned })
   }
+}
+
+export function deleteNotice(id: string): void {
+  const list = loadNotices().filter((n) => n.id !== id)
+  saveNotices(list)
+  if (isSupabaseConfigured) supabaseDelete('notices', id)
 }

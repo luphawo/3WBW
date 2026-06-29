@@ -1,5 +1,6 @@
 import { incidents as initialIncidents } from './data'
 import type { Incident } from '@/types'
+import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_incidents'
 
@@ -30,10 +31,17 @@ export function getIncidents(): Incident[] {
   return loadIncidents()
 }
 
+export async function seedIncidentsFromSupabase(): Promise<void> {
+  if (!isSupabaseConfigured) return
+  const remote = await supabaseGet<Incident>('incidents', { column: 'reported_at' })
+  if (remote.length > 0) saveIncidents(remote)
+}
+
 export function addIncident(incident: Incident): void {
   const list = loadIncidents()
   list.unshift(incident)
   saveIncidents(list)
+  if (isSupabaseConfigured) supabaseAdd('incidents', incident)
 }
 
 export function updateIncident(id: string, updates: Partial<Incident>): void {
@@ -42,10 +50,12 @@ export function updateIncident(id: string, updates: Partial<Incident>): void {
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveIncidents(list)
+    if (isSupabaseConfigured) supabaseUpdate('incidents', id, updates)
   }
 }
 
 export function deleteIncident(id: string): void {
   const list = loadIncidents().filter((i) => i.id !== id)
   saveIncidents(list)
+  if (isSupabaseConfigured) supabaseDelete('incidents', id)
 }

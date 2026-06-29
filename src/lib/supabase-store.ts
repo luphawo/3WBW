@@ -1,0 +1,79 @@
+import { supabase, isSupabaseConfigured, isBrowser } from './supabase'
+export { isSupabaseConfigured }
+
+export async function supabaseGet<T extends { id: string }>(
+  table: string,
+  orderBy?: { column: string; ascending?: boolean }
+): Promise<T[]> {
+  if (!isSupabaseConfigured || !supabase) return []
+  let query = supabase.from(table).select('*')
+  if (orderBy) {
+    query = query.order(orderBy.column, { ascending: orderBy.ascending ?? false })
+  }
+  const { data, error } = await query
+  if (error) {
+    console.error(`Supabase get ${table} error:`, error)
+    return []
+  }
+  return (data as T[]) ?? []
+}
+
+export async function supabaseAdd<T extends { id: string }>(
+  table: string,
+  item: T
+): Promise<boolean> {
+  if (!isSupabaseConfigured || !supabase) return false
+  const { error } = await supabase.from(table).insert(item as any)
+  if (error) {
+    console.error(`Supabase add ${table} error:`, error)
+    return false
+  }
+  return true
+}
+
+export async function supabaseUpdate<T>(
+  table: string,
+  id: string,
+  updates: Partial<T>
+): Promise<boolean> {
+  if (!isSupabaseConfigured || !supabase) return false
+  const { error } = await supabase.from(table).update(updates as any).eq('id', id)
+  if (error) {
+    console.error(`Supabase update ${table} error:`, error)
+    return false
+  }
+  return true
+}
+
+export async function supabaseDelete(
+  table: string,
+  id: string
+): Promise<boolean> {
+  if (!isSupabaseConfigured || !supabase) return false
+  const { error } = await supabase.from(table).delete().eq('id', id)
+  if (error) {
+    console.error(`Supabase delete ${table} error:`, error)
+    return false
+  }
+  return true
+}
+
+// localStorage fallback helpers (unchanged pattern)
+export function localStorageGet<T>(key: string, fallback: T[]): T[] {
+  if (!isBrowser()) return [...fallback]
+  try {
+    const stored = localStorage.getItem(key)
+    if (stored) {
+      const parsed = JSON.parse(stored) as T[]
+      if (parsed.length > 0) return parsed
+    }
+  } catch { /* ignore */ }
+  return [...fallback]
+}
+
+export function localStorageSave<T>(key: string, items: T[]): void {
+  if (!isBrowser()) return
+  try {
+    localStorage.setItem(key, JSON.stringify(items))
+  } catch { /* ignore */ }
+}
