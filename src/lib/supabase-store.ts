@@ -101,3 +101,15 @@ export async function syncTable<T extends { id: string }>(
     localStorageSave(storageKey, remote)
   }
 }
+
+export async function forcePushTable<T extends { id: string }>(
+  table: string,
+  storageKey: string,
+  initialData: T[]
+): Promise<string | null> {
+  if (!isSupabaseConfigured || !supabase) return 'Supabase not configured'
+  const local = localStorageGet<T>(storageKey, initialData)
+  if (local.length === 0) return 'No data to push'
+  const { error } = await supabase.from(table).upsert(local as any, { onConflict: 'id' })
+  return error ? `${error.code}: ${error.message}` : null
+}

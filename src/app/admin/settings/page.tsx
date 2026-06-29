@@ -6,7 +6,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { GlassCard } from "@/components/ui";
 import { Button } from "@/components/ui";
-import { Save, Key, Eye, Check, AlertCircle, Bell, Users, Palette, Globe } from "lucide-react";
+import { Save, Key, Eye, Check, AlertCircle, Bell, Users, Palette, Globe, Database } from "lucide-react";
+import { SupabaseStatus } from "@/components/SupabaseStatus";
 
 export default function AdminSettings() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -189,6 +190,14 @@ export default function AdminSettings() {
                   </div>
                 ))}
               </div>
+            </GlassCard>
+
+            <GlassCard>
+              <div className="flex items-center gap-3 mb-6">
+                <Database className="w-5 h-5 text-gold" />
+                <h2 className="font-bold text-lg">Supabase Sync</h2>
+              </div>
+              <SupabaseStatus />
             </GlassCard>
 
             <GlassCard>
