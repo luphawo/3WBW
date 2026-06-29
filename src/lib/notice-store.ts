@@ -1,6 +1,6 @@
 import { notices as initialNotices } from './data'
 import type { Notice } from '@/types'
-import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
+import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_notices'
 
@@ -32,9 +32,7 @@ export function getNotices(): Notice[] {
 }
 
 export async function seedNoticesFromSupabase(): Promise<void> {
-  if (!isSupabaseConfigured) return
-  const remote = await supabaseGet<Notice>('notices', { column: 'created_at' })
-  if (remote.length > 0) saveNotices(remote)
+  await syncTable<Notice>('notices', STORAGE_KEY, initialNotices)
 }
 
 export function addNotice(notice: Notice): void {

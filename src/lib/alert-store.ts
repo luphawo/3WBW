@@ -1,6 +1,6 @@
 import { alerts as initialAlerts } from './data'
 import type { Alert } from '@/types'
-import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
+import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_alerts'
 
@@ -32,9 +32,7 @@ export function getAlerts(): Alert[] {
 }
 
 export async function seedAlertsFromSupabase(): Promise<void> {
-  if (!isSupabaseConfigured) return
-  const remote = await supabaseGet<Alert>('alerts', { column: 'created_at' })
-  if (remote.length > 0) saveAlerts(remote)
+  await syncTable<Alert>('alerts', STORAGE_KEY, initialAlerts)
 }
 
 export function addAlert(alert: Alert): void {

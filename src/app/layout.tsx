@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { SupabaseInit } from "@/components/SupabaseInit";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -38,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.variable} min-h-screen flex flex-col antialiased font-sans`}>
+        <SupabaseInit />
         <Navbar />
         <main id="main-content" className="flex-1 pt-[120px]" tabIndex={-1}>
           {children}

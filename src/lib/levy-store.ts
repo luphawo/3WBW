@@ -1,6 +1,6 @@
 import { levyMonths as initialLevyMonths } from './data'
 import type { LevyMonth } from '@/types'
-import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
+import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_levy_months'
 
@@ -32,9 +32,7 @@ export function getLevyMonths(): LevyMonth[] {
 }
 
 export async function seedLevyMonthsFromSupabase(): Promise<void> {
-  if (!isSupabaseConfigured) return
-  const remote = await supabaseGet<LevyMonth>('levy_months', { column: 'month_label' })
-  if (remote.length > 0) saveMonths(remote)
+  await syncTable<LevyMonth>('levy_months', STORAGE_KEY, initialLevyMonths)
 }
 
 export function addLevyMonth(month: LevyMonth): void {

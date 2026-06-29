@@ -1,6 +1,6 @@
 import { galleryImages } from './data'
 import type { GalleryImage } from '@/types'
-import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
+import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 export interface MediaItem {
   id: string
@@ -60,9 +60,7 @@ export function getGalleryItems(): MediaItem[] {
 }
 
 export async function seedMediaFromSupabase(): Promise<void> {
-  if (!isSupabaseConfigured) return
-  const remote = await supabaseGet<MediaItem>('media')
-  if (remote.length > 0) saveMedia(remote)
+  await syncTable<MediaItem>('media', STORAGE_KEY, STATIC_MEDIA)
 }
 
 export function addMediaItem(item: MediaItem): void {

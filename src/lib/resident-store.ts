@@ -1,6 +1,6 @@
 import { residents as initialResidents } from './data'
 import type { Resident } from '@/types'
-import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
+import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_residents'
 
@@ -36,9 +36,7 @@ export function getResident(id: string): Resident | undefined {
 }
 
 export async function seedResidentsFromSupabase(): Promise<void> {
-  if (!isSupabaseConfigured) return
-  const remote = await supabaseGet<Resident>('residents', { column: 'joined_at' })
-  if (remote.length > 0) saveResidents(remote)
+  await syncTable<Resident>('residents', STORAGE_KEY, initialResidents)
 }
 
 export function addResident(resident: Resident): void {

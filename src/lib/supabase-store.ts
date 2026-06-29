@@ -77,3 +77,26 @@ export function localStorageSave<T>(key: string, items: T[]): void {
     localStorage.setItem(key, JSON.stringify(items))
   } catch { /* ignore */ }
 }
+
+export async function syncTable<T extends { id: string }>(
+  table: string,
+  storageKey: string,
+  initialData: T[]
+): Promise<void> {
+  if (!isSupabaseConfigured || !supabase) return
+  const { data, error } = await supabase.from(table).select('*')
+  if (error) {
+    console.error(`Supabase sync ${table} error:`, error)
+    return
+  }
+  const remote = (data as T[]) ?? []
+  if (remote.length > 0) {
+    localStorageSave(storageKey, remote)
+  } else {
+    const local = localStorageGet<T>(storageKey, initialData)
+    if (local.length > 0) {
+      const { error: insertError } = await supabase.from(table).insert(local as any)
+      if (insertError) console.error(`Supabase sync ${table} insert error:`, insertError)
+    }
+  }
+}

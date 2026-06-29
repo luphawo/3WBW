@@ -1,6 +1,6 @@
 import { incidents as initialIncidents } from './data'
 import type { Incident } from '@/types'
-import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
+import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_incidents'
 
@@ -32,9 +32,7 @@ export function getIncidents(): Incident[] {
 }
 
 export async function seedIncidentsFromSupabase(): Promise<void> {
-  if (!isSupabaseConfigured) return
-  const remote = await supabaseGet<Incident>('incidents', { column: 'reported_at' })
-  if (remote.length > 0) saveIncidents(remote)
+  await syncTable<Incident>('incidents', STORAGE_KEY, initialIncidents)
 }
 
 export function addIncident(incident: Incident): void {

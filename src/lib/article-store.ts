@@ -1,6 +1,6 @@
 import { articles as initialArticles } from './data'
 import type { Article } from '@/types'
-import { supabaseGet, supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured } from './supabase-store'
+import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_articles'
 
@@ -39,9 +39,7 @@ export function getArticles(): Article[] {
 }
 
 export async function seedArticlesFromSupabase(): Promise<void> {
-  if (!isSupabaseConfigured) return
-  const remote = await supabaseGet<Article>('articles', { column: 'published_at' })
-  if (remote.length > 0) saveArticles(remote)
+  await syncTable<Article>('articles', STORAGE_KEY, initialArticles)
 }
 
 export function addArticle(article: Article): void {
