@@ -5,7 +5,7 @@ import { Sun, Zap, Truck, Phone, Clock } from "lucide-react";
 
 export function SmartWidgets() {
   return (
-    <SectionReveal className="py-24 bg-surface-alt">
+    <SectionReveal className="py-24 bg-surface">
       <div className="container">
         <div className="text-center mb-12">
           <span className="text-gold text-sm font-semibold tracking-widest uppercase">Live</span>

@@ -49,3 +49,5 @@ next-env.d.ts
 Notes.md
 Screenshot*.png
 *.pdf
+
+.vercel
