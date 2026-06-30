@@ -46,28 +46,28 @@ export async function seedLevyMonthsFromSupabase(): Promise<void> {
   notify()
 }
 
-export function addLevyMonth(month: LevyMonth): void {
+export async function addLevyMonth(month: LevyMonth): Promise<void> {
   const list = loadMonths()
   list.push(month)
   saveMonths(list)
-  if (isSupabaseConfigured) supabaseAdd('levy_months', month)
+  if (isSupabaseConfigured) await supabaseAdd('levy_months', month)
   notify()
 }
 
-export function updateLevyMonth(id: string, updates: Partial<LevyMonth>): void {
+export async function updateLevyMonth(id: string, updates: Partial<LevyMonth>): Promise<void> {
   const list = loadMonths()
   const idx = list.findIndex((m) => m.id === id)
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveMonths(list)
-    if (isSupabaseConfigured) supabaseUpdate('levy_months', id, updates)
+    if (isSupabaseConfigured) await supabaseUpdate('levy_months', id, updates)
     notify()
   }
 }
 
-export function deleteLevyMonth(id: string): void {
+export async function deleteLevyMonth(id: string): Promise<void> {
   const list = loadMonths().filter((m) => m.id !== id)
   saveMonths(list)
-  if (isSupabaseConfigured) supabaseDelete('levy_months', id)
+  if (isSupabaseConfigured) await supabaseDelete('levy_months', id)
   notify()
 }

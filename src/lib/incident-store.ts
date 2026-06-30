@@ -46,28 +46,28 @@ export async function seedIncidentsFromSupabase(): Promise<void> {
   notify()
 }
 
-export function addIncident(incident: Incident): void {
+export async function addIncident(incident: Incident): Promise<void> {
   const list = loadIncidents()
   list.unshift(incident)
   saveIncidents(list)
-  if (isSupabaseConfigured) supabaseAdd('incidents', incident)
+  if (isSupabaseConfigured) await supabaseAdd('incidents', incident)
   notify()
 }
 
-export function updateIncident(id: string, updates: Partial<Incident>): void {
+export async function updateIncident(id: string, updates: Partial<Incident>): Promise<void> {
   const list = loadIncidents()
   const idx = list.findIndex((i) => i.id === id)
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveIncidents(list)
-    if (isSupabaseConfigured) supabaseUpdate('incidents', id, updates)
+    if (isSupabaseConfigured) await supabaseUpdate('incidents', id, updates)
     notify()
   }
 }
 
-export function deleteIncident(id: string): void {
+export async function deleteIncident(id: string): Promise<void> {
   const list = loadIncidents().filter((i) => i.id !== id)
   saveIncidents(list)
-  if (isSupabaseConfigured) supabaseDelete('incidents', id)
+  if (isSupabaseConfigured) await supabaseDelete('incidents', id)
   notify()
 }

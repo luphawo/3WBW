@@ -74,28 +74,28 @@ export async function seedMediaFromSupabase(): Promise<void> {
   notify()
 }
 
-export function addMediaItem(item: MediaItem): void {
+export async function addMediaItem(item: MediaItem): Promise<void> {
   const list = loadMedia()
   list.unshift(item)
   saveMedia(list)
-  if (isSupabaseConfigured) supabaseAdd('media', item)
+  if (isSupabaseConfigured) await supabaseAdd('media', item)
   notify()
 }
 
-export function updateMediaItem(id: string, updates: Partial<MediaItem>): void {
+export async function updateMediaItem(id: string, updates: Partial<MediaItem>): Promise<void> {
   const list = loadMedia()
   const idx = list.findIndex((m) => m.id === id)
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveMedia(list)
-    if (isSupabaseConfigured) supabaseUpdate('media', id, updates)
+    if (isSupabaseConfigured) await supabaseUpdate('media', id, updates)
     notify()
   }
 }
 
-export function deleteMediaItem(id: string): void {
+export async function deleteMediaItem(id: string): Promise<void> {
   const list = loadMedia().filter((m) => m.id !== id)
   saveMedia(list)
-  if (isSupabaseConfigured) supabaseDelete('media', id)
+  if (isSupabaseConfigured) await supabaseDelete('media', id)
   notify()
 }

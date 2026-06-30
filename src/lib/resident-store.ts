@@ -50,28 +50,28 @@ export async function seedResidentsFromSupabase(): Promise<void> {
   notify()
 }
 
-export function addResident(resident: Resident): void {
+export async function addResident(resident: Resident): Promise<void> {
   const list = loadResidents()
   list.push(resident)
   saveResidents(list)
-  if (isSupabaseConfigured) supabaseAdd('residents', resident)
+  if (isSupabaseConfigured) await supabaseAdd('residents', resident)
   notify()
 }
 
-export function updateResident(id: string, updates: Partial<Resident>): void {
+export async function updateResident(id: string, updates: Partial<Resident>): Promise<void> {
   const list = loadResidents()
   const idx = list.findIndex((r) => r.id === id)
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveResidents(list)
-    if (isSupabaseConfigured) supabaseUpdate('residents', id, updates)
+    if (isSupabaseConfigured) await supabaseUpdate('residents', id, updates)
     notify()
   }
 }
 
-export function deleteResident(id: string): void {
+export async function deleteResident(id: string): Promise<void> {
   const list = loadResidents().filter((r) => r.id !== id)
   saveResidents(list)
-  if (isSupabaseConfigured) supabaseDelete('residents', id)
+  if (isSupabaseConfigured) await supabaseDelete('residents', id)
   notify()
 }

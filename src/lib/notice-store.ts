@@ -46,39 +46,39 @@ export async function seedNoticesFromSupabase(): Promise<void> {
   notify()
 }
 
-export function addNotice(notice: Notice): void {
+export async function addNotice(notice: Notice): Promise<void> {
   const list = loadNotices()
   list.unshift(notice)
   saveNotices(list)
-  if (isSupabaseConfigured) supabaseAdd('notices', notice)
+  if (isSupabaseConfigured) await supabaseAdd('notices', notice)
   notify()
 }
 
-export function updateNotice(id: string, updates: Partial<Notice>): void {
+export async function updateNotice(id: string, updates: Partial<Notice>): Promise<void> {
   const list = loadNotices()
   const idx = list.findIndex((n) => n.id === id)
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveNotices(list)
-    if (isSupabaseConfigured) supabaseUpdate('notices', id, updates)
+    if (isSupabaseConfigured) await supabaseUpdate('notices', id, updates)
     notify()
   }
 }
 
-export function togglePinNotice(id: string): void {
+export async function togglePinNotice(id: string): Promise<void> {
   const list = loadNotices()
   const idx = list.findIndex((n) => n.id === id)
   if (idx !== -1) {
     list[idx] = { ...list[idx], pinned: !list[idx].pinned }
     saveNotices(list)
-    if (isSupabaseConfigured) supabaseUpdate('notices', id, { pinned: list[idx].pinned })
+    if (isSupabaseConfigured) await supabaseUpdate('notices', id, { pinned: list[idx].pinned })
     notify()
   }
 }
 
-export function deleteNotice(id: string): void {
+export async function deleteNotice(id: string): Promise<void> {
   const list = loadNotices().filter((n) => n.id !== id)
   saveNotices(list)
-  if (isSupabaseConfigured) supabaseDelete('notices', id)
+  if (isSupabaseConfigured) await supabaseDelete('notices', id)
   notify()
 }

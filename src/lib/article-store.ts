@@ -53,28 +53,28 @@ export async function seedArticlesFromSupabase(): Promise<void> {
   notify()
 }
 
-export function addArticle(article: Article): void {
+export async function addArticle(article: Article): Promise<void> {
   const list = loadArticles()
   list.unshift(article)
   saveArticles(list)
-  if (isSupabaseConfigured) supabaseAdd('articles', article)
+  if (isSupabaseConfigured) await supabaseAdd('articles', article)
   notify()
 }
 
-export function updateArticle(id: string, updates: Partial<Article>): void {
+export async function updateArticle(id: string, updates: Partial<Article>): Promise<void> {
   const list = loadArticles()
   const idx = list.findIndex((a) => a.id === id)
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveArticles(list)
-    if (isSupabaseConfigured) supabaseUpdate('articles', id, updates)
+    if (isSupabaseConfigured) await supabaseUpdate('articles', id, updates)
     notify()
   }
 }
 
-export function deleteArticle(id: string): void {
+export async function deleteArticle(id: string): Promise<void> {
   const list = loadArticles().filter((a) => a.id !== id)
   saveArticles(list)
-  if (isSupabaseConfigured) supabaseDelete('articles', id)
+  if (isSupabaseConfigured) await supabaseDelete('articles', id)
   notify()
 }

@@ -46,39 +46,39 @@ export async function seedAlertsFromSupabase(): Promise<void> {
   notify()
 }
 
-export function addAlert(alert: Alert): void {
+export async function addAlert(alert: Alert): Promise<void> {
   const list = loadAlerts()
   list.unshift(alert)
   saveAlerts(list)
-  if (isSupabaseConfigured) supabaseAdd('alerts', alert)
+  if (isSupabaseConfigured) await supabaseAdd('alerts', alert)
   notify()
 }
 
-export function updateAlert(id: string, updates: Partial<Alert>): void {
+export async function updateAlert(id: string, updates: Partial<Alert>): Promise<void> {
   const list = loadAlerts()
   const idx = list.findIndex((a) => a.id === id)
   if (idx !== -1) {
     list[idx] = { ...list[idx], ...updates }
     saveAlerts(list)
-    if (isSupabaseConfigured) supabaseUpdate('alerts', id, updates)
+    if (isSupabaseConfigured) await supabaseUpdate('alerts', id, updates)
     notify()
   }
 }
 
-export function toggleAlert(id: string): void {
+export async function toggleAlert(id: string): Promise<void> {
   const list = loadAlerts()
   const idx = list.findIndex((a) => a.id === id)
   if (idx !== -1) {
     list[idx] = { ...list[idx], active: !list[idx].active }
     saveAlerts(list)
-    if (isSupabaseConfigured) supabaseUpdate('alerts', id, { active: list[idx].active })
+    if (isSupabaseConfigured) await supabaseUpdate('alerts', id, { active: list[idx].active })
     notify()
   }
 }
 
-export function deleteAlert(id: string): void {
+export async function deleteAlert(id: string): Promise<void> {
   const list = loadAlerts().filter((a) => a.id !== id)
   saveAlerts(list)
-  if (isSupabaseConfigured) supabaseDelete('alerts', id)
+  if (isSupabaseConfigured) await supabaseDelete('alerts', id)
   notify()
 }
