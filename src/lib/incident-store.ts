@@ -3,6 +3,16 @@ import type { Incident } from '@/types'
 import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_incidents'
+const listeners = new Set<() => void>()
+
+export function subscribe(cb: () => void): () => void {
+  listeners.add(cb)
+  return () => listeners.delete(cb)
+}
+
+function notify(): void {
+  for (const cb of listeners) cb()
+}
 
 function isBrowser(): boolean {
   return typeof window !== 'undefined'
@@ -33,6 +43,7 @@ export function getIncidents(): Incident[] {
 
 export async function seedIncidentsFromSupabase(): Promise<void> {
   await syncTable<Incident>('incidents', STORAGE_KEY, initialIncidents)
+  notify()
 }
 
 export function addIncident(incident: Incident): void {
@@ -40,6 +51,7 @@ export function addIncident(incident: Incident): void {
   list.unshift(incident)
   saveIncidents(list)
   if (isSupabaseConfigured) supabaseAdd('incidents', incident)
+  notify()
 }
 
 export function updateIncident(id: string, updates: Partial<Incident>): void {
@@ -49,6 +61,7 @@ export function updateIncident(id: string, updates: Partial<Incident>): void {
     list[idx] = { ...list[idx], ...updates }
     saveIncidents(list)
     if (isSupabaseConfigured) supabaseUpdate('incidents', id, updates)
+    notify()
   }
 }
 
@@ -56,4 +69,5 @@ export function deleteIncident(id: string): void {
   const list = loadIncidents().filter((i) => i.id !== id)
   saveIncidents(list)
   if (isSupabaseConfigured) supabaseDelete('incidents', id)
+  notify()
 }

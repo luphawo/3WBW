@@ -3,6 +3,16 @@ import type { Article } from '@/types'
 import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_articles'
+const listeners = new Set<() => void>()
+
+export function subscribe(cb: () => void): () => void {
+  listeners.add(cb)
+  return () => listeners.delete(cb)
+}
+
+function notify(): void {
+  for (const cb of listeners) cb()
+}
 
 function isBrowser(): boolean {
   return typeof window !== 'undefined'
@@ -40,6 +50,7 @@ export function getArticles(): Article[] {
 
 export async function seedArticlesFromSupabase(): Promise<void> {
   await syncTable<Article>('articles', STORAGE_KEY, initialArticles)
+  notify()
 }
 
 export function addArticle(article: Article): void {
@@ -47,6 +58,7 @@ export function addArticle(article: Article): void {
   list.unshift(article)
   saveArticles(list)
   if (isSupabaseConfigured) supabaseAdd('articles', article)
+  notify()
 }
 
 export function updateArticle(id: string, updates: Partial<Article>): void {
@@ -56,6 +68,7 @@ export function updateArticle(id: string, updates: Partial<Article>): void {
     list[idx] = { ...list[idx], ...updates }
     saveArticles(list)
     if (isSupabaseConfigured) supabaseUpdate('articles', id, updates)
+    notify()
   }
 }
 
@@ -63,4 +76,5 @@ export function deleteArticle(id: string): void {
   const list = loadArticles().filter((a) => a.id !== id)
   saveArticles(list)
   if (isSupabaseConfigured) supabaseDelete('articles', id)
+  notify()
 }

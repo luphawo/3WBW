@@ -3,6 +3,16 @@ import type { Alert } from '@/types'
 import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_alerts'
+const listeners = new Set<() => void>()
+
+export function subscribe(cb: () => void): () => void {
+  listeners.add(cb)
+  return () => listeners.delete(cb)
+}
+
+function notify(): void {
+  for (const cb of listeners) cb()
+}
 
 function isBrowser(): boolean {
   return typeof window !== 'undefined'
@@ -33,6 +43,7 @@ export function getAlerts(): Alert[] {
 
 export async function seedAlertsFromSupabase(): Promise<void> {
   await syncTable<Alert>('alerts', STORAGE_KEY, initialAlerts)
+  notify()
 }
 
 export function addAlert(alert: Alert): void {
@@ -40,6 +51,7 @@ export function addAlert(alert: Alert): void {
   list.unshift(alert)
   saveAlerts(list)
   if (isSupabaseConfigured) supabaseAdd('alerts', alert)
+  notify()
 }
 
 export function updateAlert(id: string, updates: Partial<Alert>): void {
@@ -49,6 +61,7 @@ export function updateAlert(id: string, updates: Partial<Alert>): void {
     list[idx] = { ...list[idx], ...updates }
     saveAlerts(list)
     if (isSupabaseConfigured) supabaseUpdate('alerts', id, updates)
+    notify()
   }
 }
 
@@ -59,6 +72,7 @@ export function toggleAlert(id: string): void {
     list[idx] = { ...list[idx], active: !list[idx].active }
     saveAlerts(list)
     if (isSupabaseConfigured) supabaseUpdate('alerts', id, { active: list[idx].active })
+    notify()
   }
 }
 
@@ -66,4 +80,5 @@ export function deleteAlert(id: string): void {
   const list = loadAlerts().filter((a) => a.id !== id)
   saveAlerts(list)
   if (isSupabaseConfigured) supabaseDelete('alerts', id)
+  notify()
 }

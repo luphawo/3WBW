@@ -27,6 +27,16 @@ const STATIC_MEDIA: MediaItem[] = [
 ]
 
 const STORAGE_KEY = '3wbw_media'
+const listeners = new Set<() => void>()
+
+export function subscribe(cb: () => void): () => void {
+  listeners.add(cb)
+  return () => listeners.delete(cb)
+}
+
+function notify(): void {
+  for (const cb of listeners) cb()
+}
 
 function isBrowser(): boolean {
   return typeof window !== 'undefined'
@@ -61,6 +71,7 @@ export function getGalleryItems(): MediaItem[] {
 
 export async function seedMediaFromSupabase(): Promise<void> {
   await syncTable<MediaItem>('media', STORAGE_KEY, STATIC_MEDIA)
+  notify()
 }
 
 export function addMediaItem(item: MediaItem): void {
@@ -68,6 +79,7 @@ export function addMediaItem(item: MediaItem): void {
   list.unshift(item)
   saveMedia(list)
   if (isSupabaseConfigured) supabaseAdd('media', item)
+  notify()
 }
 
 export function updateMediaItem(id: string, updates: Partial<MediaItem>): void {
@@ -77,6 +89,7 @@ export function updateMediaItem(id: string, updates: Partial<MediaItem>): void {
     list[idx] = { ...list[idx], ...updates }
     saveMedia(list)
     if (isSupabaseConfigured) supabaseUpdate('media', id, updates)
+    notify()
   }
 }
 
@@ -84,4 +97,5 @@ export function deleteMediaItem(id: string): void {
   const list = loadMedia().filter((m) => m.id !== id)
   saveMedia(list)
   if (isSupabaseConfigured) supabaseDelete('media', id)
+  notify()
 }

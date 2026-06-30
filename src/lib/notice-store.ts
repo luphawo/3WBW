@@ -3,6 +3,16 @@ import type { Notice } from '@/types'
 import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_notices'
+const listeners = new Set<() => void>()
+
+export function subscribe(cb: () => void): () => void {
+  listeners.add(cb)
+  return () => listeners.delete(cb)
+}
+
+function notify(): void {
+  for (const cb of listeners) cb()
+}
 
 function isBrowser(): boolean {
   return typeof window !== 'undefined'
@@ -33,6 +43,7 @@ export function getNotices(): Notice[] {
 
 export async function seedNoticesFromSupabase(): Promise<void> {
   await syncTable<Notice>('notices', STORAGE_KEY, initialNotices)
+  notify()
 }
 
 export function addNotice(notice: Notice): void {
@@ -40,6 +51,7 @@ export function addNotice(notice: Notice): void {
   list.unshift(notice)
   saveNotices(list)
   if (isSupabaseConfigured) supabaseAdd('notices', notice)
+  notify()
 }
 
 export function updateNotice(id: string, updates: Partial<Notice>): void {
@@ -49,6 +61,7 @@ export function updateNotice(id: string, updates: Partial<Notice>): void {
     list[idx] = { ...list[idx], ...updates }
     saveNotices(list)
     if (isSupabaseConfigured) supabaseUpdate('notices', id, updates)
+    notify()
   }
 }
 
@@ -59,6 +72,7 @@ export function togglePinNotice(id: string): void {
     list[idx] = { ...list[idx], pinned: !list[idx].pinned }
     saveNotices(list)
     if (isSupabaseConfigured) supabaseUpdate('notices', id, { pinned: list[idx].pinned })
+    notify()
   }
 }
 
@@ -66,4 +80,5 @@ export function deleteNotice(id: string): void {
   const list = loadNotices().filter((n) => n.id !== id)
   saveNotices(list)
   if (isSupabaseConfigured) supabaseDelete('notices', id)
+  notify()
 }

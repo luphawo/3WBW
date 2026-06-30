@@ -3,6 +3,16 @@ import type { Resident } from '@/types'
 import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_residents'
+const listeners = new Set<() => void>()
+
+export function subscribe(cb: () => void): () => void {
+  listeners.add(cb)
+  return () => listeners.delete(cb)
+}
+
+function notify(): void {
+  for (const cb of listeners) cb()
+}
 
 function isBrowser(): boolean {
   return typeof window !== 'undefined'
@@ -37,6 +47,7 @@ export function getResident(id: string): Resident | undefined {
 
 export async function seedResidentsFromSupabase(): Promise<void> {
   await syncTable<Resident>('residents', STORAGE_KEY, initialResidents)
+  notify()
 }
 
 export function addResident(resident: Resident): void {
@@ -44,6 +55,7 @@ export function addResident(resident: Resident): void {
   list.push(resident)
   saveResidents(list)
   if (isSupabaseConfigured) supabaseAdd('residents', resident)
+  notify()
 }
 
 export function updateResident(id: string, updates: Partial<Resident>): void {
@@ -53,6 +65,7 @@ export function updateResident(id: string, updates: Partial<Resident>): void {
     list[idx] = { ...list[idx], ...updates }
     saveResidents(list)
     if (isSupabaseConfigured) supabaseUpdate('residents', id, updates)
+    notify()
   }
 }
 
@@ -60,4 +73,5 @@ export function deleteResident(id: string): void {
   const list = loadResidents().filter((r) => r.id !== id)
   saveResidents(list)
   if (isSupabaseConfigured) supabaseDelete('residents', id)
+  notify()
 }

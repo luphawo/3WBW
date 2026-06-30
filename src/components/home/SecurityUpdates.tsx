@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/ui";
-import { getAlerts } from "@/lib/alert-store";
-import { getIncidents } from "@/lib/incident-store";
+import { getAlerts, subscribe as subscribeAlerts } from "@/lib/alert-store";
+import { getIncidents, subscribe as subscribeIncidents } from "@/lib/incident-store";
 import { AlertTriangle, Shield, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -15,6 +15,9 @@ export function SecurityUpdates() {
   useEffect(() => {
     setAlerts(getAlerts());
     setIncidents(getIncidents());
+    const unsub1 = subscribeAlerts(() => setAlerts(getAlerts()));
+    const unsub2 = subscribeIncidents(() => setIncidents(getIncidents()));
+    return () => { unsub1(); unsub2(); };
   }, []);
 
   const activeAlerts = alerts.filter((a) => a.active);

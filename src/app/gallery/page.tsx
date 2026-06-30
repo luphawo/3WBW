@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionReveal, GlassCard } from "@/components/ui";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { getGalleryItems } from "@/lib/media-store";
+import { getGalleryItems, subscribe } from "@/lib/media-store";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface GalleryDisplayItem {
@@ -34,6 +34,17 @@ export default function Gallery() {
       height: item.height || 600,
     }));
     setGalleryItems(items);
+    const unsub = subscribe(() => {
+      setGalleryItems(getGalleryItems().map((item) => ({
+        id: item.id,
+        src: item.src,
+        category: item.category,
+        caption: item.caption,
+        width: item.width || 800,
+        height: item.height || 600,
+      })));
+    });
+    return unsub;
   }, []);
 
   const filtered = filter === "all" ? galleryItems : galleryItems.filter((img) => img.category === filter);

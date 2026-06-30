@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/ui";
-import { getNotices } from "@/lib/notice-store";
+import { getNotices, subscribe } from "@/lib/notice-store";
 import { notices as staticNotices } from "@/lib/data";
 import { Pin, Bell, AlertTriangle } from "lucide-react";
 
@@ -18,6 +18,8 @@ export function CommunityNotices() {
 
   useEffect(() => {
     setNoticeList(getNotices());
+    const unsub = subscribe(() => setNoticeList(getNotices()));
+    return unsub;
   }, []);
 
   return (

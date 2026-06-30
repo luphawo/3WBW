@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionReveal, GlassCard } from "@/components/ui";
-import { getGalleryItems } from "@/lib/media-store";
+import { getGalleryItems, subscribe } from "@/lib/media-store";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface GalleryDisplayItem {
@@ -52,6 +52,28 @@ export function CommunityGallery() {
 
     const rest = remaining.slice(0, 6 - picked.length);
     setGalleryItems([...picked, ...rest]);
+    const unsub = subscribe(() => {
+      const updated = getGalleryItems().map((item) => ({
+        id: item.id,
+        src: item.src,
+        category: item.category,
+        caption: item.caption,
+        width: item.width || 800,
+        height: item.height || 600,
+      }));
+      const newPicked: GalleryDisplayItem[] = [];
+      const newRemaining: GalleryDisplayItem[] = [];
+      const newUsed = new Set<string>();
+      for (const cat of required) {
+        const found = updated.find((item) => item.category === cat);
+        if (found) { newPicked.push(found); newUsed.add(found.id); }
+      }
+      for (const item of updated) {
+        if (!newUsed.has(item.id)) newRemaining.push(item);
+      }
+      setGalleryItems([...newPicked, ...newRemaining.slice(0, 6 - newPicked.length)]);
+    });
+    return unsub;
   }, []);
 
   const categories = ["all", "community", "event", "lifestyle", "security"];
