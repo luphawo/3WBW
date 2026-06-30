@@ -24,7 +24,7 @@ function loadMonths(): LevyMonth[] {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
       const parsed = JSON.parse(stored) as LevyMonth[]
-      if (parsed.length > 0) return parsed
+      if (parsed.length > 0) return parsed.sort((a, b) => a.id.localeCompare(b.id))
     }
   } catch { /* ignore */ }
   return [...initialLevyMonths]

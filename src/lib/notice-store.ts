@@ -24,7 +24,7 @@ function loadNotices(): Notice[] {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
       const parsed = JSON.parse(stored) as Notice[]
-      if (parsed.length > 0) return parsed
+      if (parsed.length > 0) return parsed.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     }
   } catch { /* ignore */ }
   return [...initialNotices]
