@@ -1,5 +1,5 @@
-import { supabase, isSupabaseConfigured, isBrowser } from './supabase'
-export { isSupabaseConfigured }
+import { supabase, isSupabaseConfigured, supabaseUrl, isBrowser } from './supabase'
+export { isSupabaseConfigured, supabaseUrl }
 
 export async function supabaseGet<T extends { id: string }>(
   table: string,

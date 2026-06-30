@@ -1,8 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+let rawUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim()
+let supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
+// Strip /rest/v1 if already present (SDK appends it internally)
+if (rawUrl && rawUrl.includes('/rest/v1')) {
+  rawUrl = rawUrl.replace(/\/rest\/v1\/?$/, '')
+}
+
+export const supabaseUrl = rawUrl
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseKey)
 
 export const supabase = isSupabaseConfigured
