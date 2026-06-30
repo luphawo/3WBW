@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { SectionReveal, GlassCard } from "@/components/ui";
 import { ChevronLeft, ChevronRight, Users } from "lucide-react";
-import { getLevyMonths } from "@/lib/levy-store";
+import { getLevyMonths, subscribe } from "@/lib/levy-store";
 import type { StreetCount } from "@/types";
 
 function Bar({ street, count, total, index }: StreetCount & { index: number }) {
@@ -41,6 +41,8 @@ export function LevyChart() {
 
   useEffect(() => {
     setLevyMonths(getLevyMonths());
+    const unsub = subscribe(() => setLevyMonths(getLevyMonths()));
+    return unsub;
   }, []);
 
   if (levyMonths.length === 0) return null;

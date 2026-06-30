@@ -3,6 +3,16 @@ import type { LevyMonth } from '@/types'
 import { supabaseAdd, supabaseUpdate, supabaseDelete, isSupabaseConfigured, syncTable } from './supabase-store'
 
 const STORAGE_KEY = '3wbw_levy_months'
+const listeners = new Set<() => void>()
+
+export function subscribe(cb: () => void): () => void {
+  listeners.add(cb)
+  return () => listeners.delete(cb)
+}
+
+function notify(): void {
+  for (const cb of listeners) cb()
+}
 
 function isBrowser(): boolean {
   return typeof window !== 'undefined'
@@ -33,6 +43,7 @@ export function getLevyMonths(): LevyMonth[] {
 
 export async function seedLevyMonthsFromSupabase(): Promise<void> {
   await syncTable<LevyMonth>('levy_months', STORAGE_KEY, initialLevyMonths)
+  notify()
 }
 
 export function addLevyMonth(month: LevyMonth): void {
@@ -40,6 +51,7 @@ export function addLevyMonth(month: LevyMonth): void {
   list.push(month)
   saveMonths(list)
   if (isSupabaseConfigured) supabaseAdd('levy_months', month)
+  notify()
 }
 
 export function updateLevyMonth(id: string, updates: Partial<LevyMonth>): void {
@@ -49,6 +61,7 @@ export function updateLevyMonth(id: string, updates: Partial<LevyMonth>): void {
     list[idx] = { ...list[idx], ...updates }
     saveMonths(list)
     if (isSupabaseConfigured) supabaseUpdate('levy_months', id, updates)
+    notify()
   }
 }
 
@@ -56,4 +69,5 @@ export function deleteLevyMonth(id: string): void {
   const list = loadMonths().filter((m) => m.id !== id)
   saveMonths(list)
   if (isSupabaseConfigured) supabaseDelete('levy_months', id)
+  notify()
 }

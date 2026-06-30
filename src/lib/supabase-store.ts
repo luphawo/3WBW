@@ -85,12 +85,6 @@ export async function syncTable<T extends { id: string }>(
 ): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return
 
-  const local = localStorageGet<T>(storageKey, initialData)
-  if (local.length > 0) {
-    const { error: upsertError } = await supabase.from(table).upsert(local as any, { onConflict: 'id' })
-    if (upsertError) console.error(`Supabase sync ${table} upsert error:`, upsertError)
-  }
-
   const { data, error } = await supabase.from(table).select('*')
   if (error) {
     console.error(`Supabase sync ${table} select error:`, error)
@@ -99,6 +93,13 @@ export async function syncTable<T extends { id: string }>(
   const remote = (data as T[]) ?? []
   if (remote.length > 0) {
     localStorageSave(storageKey, remote)
+    return
+  }
+
+  const local = localStorageGet<T>(storageKey, initialData)
+  if (local.length > 0) {
+    const { error: upsertError } = await supabase.from(table).upsert(local as any, { onConflict: 'id' })
+    if (upsertError) console.error(`Supabase sync ${table} upsert error:`, upsertError)
   }
 }
 
