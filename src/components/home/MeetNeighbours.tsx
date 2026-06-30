@@ -1,15 +1,19 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { SectionReveal, GlassCard } from "@/components/ui";
-import { Resident } from "@/types";
+import { getResidents, subscribe } from "@/lib/resident-store";
 import { Quote } from "lucide-react";
 
-interface MeetNeighboursProps {
-  residents: Resident[];
-}
+export function MeetNeighbours() {
+  const [residents, setResidents] = useState(getResidents());
 
-export function MeetNeighbours({ residents }: MeetNeighboursProps) {
+  useEffect(() => {
+    setResidents(getResidents());
+    const unsub = subscribe(() => setResidents(getResidents()));
+    return unsub;
+  }, []);
   return (
     <SectionReveal className="py-24">
       <div className="container">

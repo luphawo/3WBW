@@ -6,7 +6,7 @@ import { MeetNeighbours } from "@/components/home/MeetNeighbours";
 import { LocalRecommendations } from "@/components/home/LocalRecommendations";
 import { SmartWidgets } from "@/components/home/SmartWidgets";
 import { CommunityGallery } from "@/components/home/CommunityGallery";
-import { residents, businesses } from "@/lib/data";
+import { businesses } from "@/lib/data";
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
       <CommunityNotices />
       <SmartWidgets />
       <SecurityUpdates />
-      <MeetNeighbours residents={residents} />
+      <MeetNeighbours />
       <LocalRecommendations businesses={businesses} />
       <CommunityGallery />
     </>
