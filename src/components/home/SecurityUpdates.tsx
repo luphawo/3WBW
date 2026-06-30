@@ -23,7 +23,7 @@ export function SecurityUpdates() {
   const activeAlerts = alerts.filter((a) => a.active);
 
   return (
-    <section className="py-24">
+    <section className="py-24 bg-surface-alt">
       <div className="container">
         <div className="flex items-end justify-between mb-12">
           <div>
